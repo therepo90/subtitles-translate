@@ -4,7 +4,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title></title>
+    <title>Translate subtitles</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- SEO Meta Tags -->
@@ -40,9 +40,20 @@
 </head>
 <body>
 <div class="main">
-    <h1>Title</h1>
-    <h2 style="text-align:center;color:white;">Subtitle</h2>
+    <h1>Translate subtitles</h1>
     <div class="container">
+        <div class="items-center vh-100">
+            <form class="flex flex-column dropzone" action="upload.php" method="post" enctype="multipart/form-data">
+                <label for="file" class="the-label">
+                    <span class="upload-text" id="upload-text"><button type="button" class="btn btn-primary">Upload or drop in subtitles</button></span>
+                    <span id="filename-preview" class="hidden"></span>
+                </label>
+                <input type="file" name="file" id="file" class="hidden" accept="text/*">
+            </form>
+            <div style="text-align: center;width: 100%;">
+                <button  style="max-width: 150px;margin-top: 20px;" type="submit" class="btn btn-secondary hidden" id="submit">Translate</button>
+            </div>
+        </div>
     </div>
 </div>
 </body>
