@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const uploadText = document.getElementById('upload-text');
     const step2 = document.getElementById('step2');
     const submitButton = document.getElementById('submit');
-    let uploadedFile = null;
     // sprawdz czy sa wszystkie el, a jak nie ma to zglos ktory
     if (!dropzone || !fileInput || !filenamePreview || !uploadText || !step2 || !submitButton) {
         console.error('Brakuje elementów na stronie!');
@@ -31,11 +30,22 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         dropzone.classList.remove('drag-over');
         const files = e.dataTransfer.files;
+        const file = files[0];
+        if (file && file.size > 350 * 1024) { // Sprawdzenie, czy rozmiar pliku przekracza 350 KB
+            alert('Plik jest zbyt duży. Maksymalny rozmiar pliku to 350 KB.');
+            this.value = ''; // Wyczyszczenie wybranego pliku
+        }
+        fileInput.files = e.dataTransfer.files;
         handleFiles(files);
     });
 
     fileInput.addEventListener('change', (e) => {
         const files = e.target.files;
+        const file = files[0];
+        if (file && file.size > 350 * 1024) { // Sprawdzenie, czy rozmiar pliku przekracza 350 KB
+            alert('Plik jest zbyt duży. Maksymalny rozmiar pliku to 350 KB.');
+            this.value = ''; // Wyczyszczenie wybranego pliku
+        }
         handleFiles(files);
     });
 
@@ -43,12 +53,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log({files})
         if (!files || files.length === 0) return;
         const file = files[0];
-        // Usunięcie poprzedniego pliku
-        if (uploadedFile) {
-            URL.revokeObjectURL(uploadedFile);
-        }
 
-        uploadedFile = file;
         filenamePreview.textContent = file.name;
         filenamePreview.classList.remove('hidden');
         uploadText.classList.add('hidden');
@@ -58,8 +63,19 @@ document.addEventListener("DOMContentLoaded", function() {
     // Obsługa przesyłania pliku i tłumaczenia
     submitButton.addEventListener('click', async () => {
         const file = fileInput.files[fileInput.files.length - 1];
+        console.log({fileInput})
+        console.log({file})
+        const targetLanguageInput = document.getElementById('target-language');
+        const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+
+        // Sprawdź, czy pole target-language nie jest puste
+        if (!targetLanguage) {
+            alert('Please enter the target language code.');
+            return;
+        }
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
 
         try {
             const response = await fetch('http://localhost:3000/translate', {
@@ -71,14 +87,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 throw new Error('Błąd podczas przetwarzania pliku.');
             }
 
-            const translatedText = await response.text();
+            const fileId = await response.text();
             // Tutaj możesz obsłużyć przetłumaczony tekst, np. wyświetlić go na stronie
-            console.log(translatedText);
-            // Usunięcie poprzedniego pliku z inputa
-            fileInput.value = '';
+            console.log(fileId);
+            window.open(`http://localhost:3000/file/${fileId}`);
         } catch (error) {
-            alert(error.message);
-            console.error('Error:', error.message);
+            alert(error);
+            console.error('Error:');
+            console.error(error);
         }
 
     });
