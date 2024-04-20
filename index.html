@@ -43,20 +43,21 @@
     <h1>Translate subtitles</h1>
     <div class="container">
         <div class="items-center vh-100">
-            <form class="flex flex-column dropzone" action="upload.php" method="post" enctype="multipart/form-data">
+            <form class="flex flex-column dropzone" enctype="multipart/form-data">
                 <label for="file" class="the-label">
-                    <span class="upload-text" id="upload-text"><button type="button" class="btn btn-primary">Upload or drop in subtitles</button></span>
+                    <span class="upload-text" id="upload-text"><button type="button" class="btn btn-primary" id="sub-btn">Upload or drop in subtitles</button></span>
                     <span id="filename-preview" class="hidden"></span>
                 </label>
                 <input type="file" name="file" id="file" class="hidden" accept="text/*">
             </form>
-            <div style="text-align: center;width: 100%;"  class="hidden" id="step2">
+            <div style="text-align: center;width: 100%;" class="hidden" id="step2">
                 <fieldset>
-                    <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..."></label>
+                    <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language"></label>
                 </fieldset>
-                <button  style="max-width: 150px;margin-top: 20px;" type="submit" class="btn btn-secondary" id="submit">Translate</button>
+                <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="submit">Translate</button>
             </div>
         </div>
+
     </div>
 </div>
 </body>
