@@ -1,3 +1,5 @@
+const host = 'https://subtitles-translate-api.caprover.financialpanda.pl/'; // @TODO route
+//const host = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function() {
     const dropzone = document.querySelector('.dropzone');
     const fileInput = document.getElementById('file');
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
 
         try {
-            const response = await fetch('http://localhost:3000/translate', {
+            const response = await fetch(`${host}/translate`, {
                 method: 'POST',
                 body: formData
             });
@@ -90,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const fileId = await response.text();
             // Tutaj możesz obsłużyć przetłumaczony tekst, np. wyświetlić go na stronie
             console.log(fileId);
-            window.open(`http://localhost:3000/file/${fileId}`);
+            window.open(`${host}/file/${fileId}`);
         } catch (error) {
             alert(error);
             console.error('Error:');
