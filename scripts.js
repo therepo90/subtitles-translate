@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const fileInput = document.getElementById('file');
     const filenamePreview = document.getElementById('filename-preview');
     const uploadText = document.getElementById('upload-text');
-    const submit = document.getElementById('submit');
+    const step2 = document.getElementById('step2');
 
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
         filenamePreview.textContent = file.name;
         filenamePreview.classList.remove('hidden');
         uploadText.classList.add('hidden');
-        submit.classList.remove('hidden');
+        step2.classList.remove('hidden');
     }
 
     // Additional logic for click to select file
