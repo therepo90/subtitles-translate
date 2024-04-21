@@ -118,14 +118,15 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"imtx":[function(require,module,exports) {
-const host = 'https://api.translatesubtitles.org'; // @TODO route
-//const host = 'http://localhost:3000';
+//onst host = 'https://api.translatesubtitles.org'; // @TODO route
+const host = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function () {
   const dropzone = document.querySelector('.dropzone');
   const fileInput = document.getElementById('file');
   const filenamePreview = document.getElementById('filename-preview');
   const uploadText = document.getElementById('upload-text');
   const step2 = document.getElementById('step2');
+  const loading = document.getElementById('loading');
   const submitButton = document.getElementById('submit');
   // sprawdz czy sa wszystkie el, a jak nie ma to zglos ktory
   if (!dropzone || !fileInput || !filenamePreview || !uploadText || !step2 || !submitButton) {
@@ -164,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const file = files[0];
     if (file && file.size > 350 * 1024) {
       // Sprawdzenie, czy rozmiar pliku przekracza 350 KB
-      alert('Plik jest zbyt duży. Maksymalny rozmiar pliku to 350 KB.');
+      alert('Files under <350kb allowed');
       this.value = ''; // Wyczyszczenie wybranego pliku
     }
     handleFiles(files);
@@ -183,6 +184,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Obsługa przesyłania pliku i tłumaczenia
   submitButton.addEventListener('click', async () => {
+    step2.classList.add('hidden');
+    loading.classList.remove('hidden');
     const file = fileInput.files[fileInput.files.length - 1];
     console.log({
       fileInput
@@ -219,6 +222,10 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error('Error:');
       console.error(error); //
     }
+    // clear input and hide step2
+    fileInput.value = '';
+    step2.classList.add('hidden');
+    loading.classList.add('hidden');
   });
 });
 },{}]},{},["imtx"], null)
