@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
     submitButton.addEventListener('click', async () => {
         step2.classList.add('hidden');
         loading.classList.remove('hidden');
+
         const file = fileInput.files[fileInput.files.length - 1];
         console.log({fileInput})
         console.log({file})
@@ -82,6 +83,8 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('file', file);
         formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
 
+        // clear input and hide step2
+        fileInput.value = '';
         try {
             const response = await fetch(`${host}/translate`, {
                 method: 'POST',
@@ -111,8 +114,6 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('Error:');
             console.error(error);//
         }
-        // clear input and hide step2
-        fileInput.value = '';
         step2.classList.add('hidden');
         loading.classList.add('hidden');
 
