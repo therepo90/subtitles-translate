@@ -1,5 +1,5 @@
-//onst host = 'https://api.translatesubtitles.org'; // @TODO route
-const host = 'http://localhost:3000';
+const host = 'https://api.translatesubtitles.org';
+//const host = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function() {
     const dropzone = document.querySelector('.dropzone');
     const fileInput = document.getElementById('file');
