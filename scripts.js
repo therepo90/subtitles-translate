@@ -1,4 +1,4 @@
-const host = 'https://subtitles-translate-api.caprover.financialpanda.pl'; // @TODO route
+const host = 'https://api.translatesubtitles.org'; // @TODO route
 //const host = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function() {
     const dropzone = document.querySelector('.dropzone');
