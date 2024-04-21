@@ -89,7 +89,16 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             if (!response.ok) {
-                throw new Error('Błąd podczas przetwarzania pliku.');
+                let errorMessage = 'Error';
+                try {
+                    const errorResponse = await response.json();
+                    if (errorResponse && errorResponse.message) {
+                        errorMessage = errorResponse.message;
+                    }
+                } catch (error) {
+                    console.error('Error', error);
+                }
+                throw new Error(errorMessage);
             }
 
             const fileId = await response.text();
