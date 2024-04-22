@@ -83,13 +83,13 @@ document.addEventListener("DOMContentLoaded", function() {
             if(cost ==='free'){
                 costPreview.textContent = `You are lucky. Its free.`;
             }else {
-                // costPreview.textContent = `Cost: ${cost}€`;
-                costPreview.textContent = `Quota not available. Come back next month or email me.`;
+                costPreview.textContent = `Cost: ${cost}€`;
+                // costPreview.textContent = `Quota not available. Come back next month or email me.`;
             }
 
-            if(cost === 'free') {
+            //if(cost === 'free') {
                 step3.classList.remove('hidden');
-            }
+            //}
         } catch (error) {
             handleResError(error);
         }
