@@ -1,5 +1,10 @@
 const host = process.env.LOCAL ==='true' ? 'http://localhost:3000': 'https://api.translatesubtitles.org';
 //const host = 'http://localhost:3000';
+
+var globals = {
+    paymentUrl: undefined
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     const dropzone = document.querySelector('.dropzone');
     const fileInput = document.getElementById('file');
@@ -11,18 +16,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const submitButton = document.getElementById('submit');
     const calcCost = document.getElementById('calc-cost');
     const costPreview = document.getElementById('cost-preview');
-    // sprawdz czy sa wszystkie el, a jak nie ma to zglos ktory
-    if (!dropzone || !fileInput || !filenamePreview || !uploadText || !step2 || !submitButton) {
-        console.error('Brakuje elementów na stronie!');
-        // ktorego brakuje?
-        if(!dropzone) console.error('Brakuje dropzone');
-        if(!fileInput) console.error('Brakuje fileInput');
-        if(!filenamePreview) console.error('Brakuje filenamePreview');
-        if(!uploadText) console.error('Brakuje uploadText');
-        if(!step2) console.error('Brakuje step2');
-        if(!submitButton) console.error('Brakuje submitButton');
-        return;
+
+
+    async function redirectToCheckout() {
+        console.log('Redirecting to' + globals.paymentUrl);
+        window.open(globals.paymentUrl);
     }
+
+    const checkoutButton = document.getElementById('checkout-button');
+    checkoutButton.addEventListener('click', () => redirectToCheckout());
+
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropzone.classList.add('drag-over');
@@ -78,12 +81,13 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             await checkResError(response);
 
-            const cost = await response.text();
-            console.log(cost);
-            if(cost ==='free'){
+            const {price, url} = await response.json();
+            globals.paymentUrl = url;
+            console.log(price, globals.paymentUrl);
+            if(price ==='free'){
                 costPreview.textContent = `You are lucky. Its free.`;
             }else {
-                costPreview.textContent = `Cost: ${cost}€`;
+                costPreview.textContent = `Cost: ${price}€`;
                 // costPreview.textContent = `Quota not available. Come back next month or email me.`;
             }
 
