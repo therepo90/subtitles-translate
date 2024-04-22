@@ -134,6 +134,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(msg);
                 throw new Error(msg);
             }
+
             let errorMessage = 'Error';
             try {
                 const errorResponse = await response.json();
@@ -182,6 +183,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         'Content-Type': 'application/json' // Specify the content type
                     },
                 });
+                if(!response.ok && response.status === 401) {
+                    const msg = 'Token can be used only once. Check popup window.'
+                    alert(msg);
+                    throw new Error(msg);
+                }
                 await checkResError(response);
 
                 const fileId = await response.text();
