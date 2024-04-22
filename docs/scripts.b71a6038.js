@@ -118,7 +118,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"imtx":[function(require,module,exports) {
-const host = 'https://api.translatesubtitles.org';
+const host = "true" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
 //const host = 'http://localhost:3000';
 document.addEventListener("DOMContentLoaded", function () {
   const dropzone = document.querySelector('.dropzone');
@@ -156,9 +156,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const files = e.dataTransfer.files;
     const file = files[0];
     if (file && file.size > 350 * 1024) {
-      // Sprawdzenie, czy rozmiar pliku przekracza 350 KB
-      alert('Plik jest zbyt duży. Maksymalny rozmiar pliku to 350 KB.');
-      this.value = ''; // Wyczyszczenie wybranego pliku
+      alert('File too big. Max is 350KB.');
+      this.value = '';
     }
     fileInput.files = e.dataTransfer.files;
     handleFiles(files);
@@ -187,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Obsługa przesyłania pliku i tłumaczenia
   calcCost.addEventListener('click', async () => {
+    costPreview.textContent = '';
     const formData = prepareInput();
     try {
       const response = await fetch(`${host}/check-file`, {
@@ -260,7 +260,8 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
 
     // clear input and hide step2
-    fileInput.value = '';
+    //fileInput.value = '';
+    //filenamePreview.textContent = '';
     try {
       const response = await fetch(`${host}/translate`, {
         method: 'POST',
