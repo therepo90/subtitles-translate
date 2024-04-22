@@ -118,8 +118,12 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"imtx":[function(require,module,exports) {
-const host = "true" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+const host = "false" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
 //const host = 'http://localhost:3000';
+
+var globals = {
+  paymentUrl: undefined
+};
 document.addEventListener("DOMContentLoaded", function () {
   const dropzone = document.querySelector('.dropzone');
   const fileInput = document.getElementById('file');
@@ -128,21 +132,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const step2 = document.getElementById('step2');
   const step3 = document.getElementById('step3');
   const loading = document.getElementById('loading');
-  const submitButton = document.getElementById('submit');
   const calcCost = document.getElementById('calc-cost');
   const costPreview = document.getElementById('cost-preview');
-  // sprawdz czy sa wszystkie el, a jak nie ma to zglos ktory
-  if (!dropzone || !fileInput || !filenamePreview || !uploadText || !step2 || !submitButton) {
-    console.error('Brakuje elementów na stronie!');
-    // ktorego brakuje?
-    if (!dropzone) console.error('Brakuje dropzone');
-    if (!fileInput) console.error('Brakuje fileInput');
-    if (!filenamePreview) console.error('Brakuje filenamePreview');
-    if (!uploadText) console.error('Brakuje uploadText');
-    if (!step2) console.error('Brakuje step2');
-    if (!submitButton) console.error('Brakuje submitButton');
-    return;
+  async function redirectToCheckout() {
+    console.log('Redirecting to' + globals.paymentUrl);
+    window.open(globals.paymentUrl);
   }
+  const checkoutButton = document.getElementById('checkout-button');
+  checkoutButton.addEventListener('click', () => redirectToCheckout());
   dropzone.addEventListener('dragover', e => {
     e.preventDefault();
     dropzone.classList.add('drag-over');
@@ -188,23 +185,37 @@ document.addEventListener("DOMContentLoaded", function () {
   calcCost.addEventListener('click', async () => {
     costPreview.textContent = '';
     const formData = prepareInput();
+    const targetLanguageInput = document.getElementById('target-language');
+    const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+    // Sprawdź, czy pole target-language nie jest puste
+    if (!targetLanguage) {
+      alert('Please enter the target language code.');
+      return;
+    }
+    formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
+
     try {
       const response = await fetch(`${host}/check-file`, {
         method: 'POST',
         body: formData
       });
       await checkResError(response);
-      const cost = await response.text();
-      console.log(cost);
-      if (cost === 'free') {
+      const {
+        price,
+        url
+      } = await response.json();
+      globals.paymentUrl = url;
+      console.log(price, globals.paymentUrl);
+      if (price === 'free') {
         costPreview.textContent = `You are lucky. Its free.`;
       } else {
-        // costPreview.textContent = `Cost: ${cost}€`;
-        costPreview.textContent = `Quota not available. Come back next month or email me.`;
+        costPreview.textContent = `Cost: ${price}€`;
+        // costPreview.textContent = `Quota not available. Come back next month or email me.`;
       }
-      if (cost === 'free') {
-        step3.classList.remove('hidden');
-      }
+
+      //if(cost === 'free') {
+      step3.classList.remove('hidden');
+      //}
     } catch (error) {
       handleResError(error);
     }
@@ -246,37 +257,48 @@ document.addEventListener("DOMContentLoaded", function () {
     console.error('Error:');
     console.error(error); //
   };
-  submitButton.addEventListener('click', async () => {
-    step2.classList.add('hidden');
-    loading.classList.remove('hidden');
-    const formData = prepareInput();
-    const targetLanguageInput = document.getElementById('target-language');
-    const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
-    // Sprawdź, czy pole target-language nie jest puste
-    if (!targetLanguage) {
-      alert('Please enter the target language code.');
-      return;
-    }
-    formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
-
-    // clear input and hide step2
-    //fileInput.value = '';
-    //filenamePreview.textContent = '';
-    try {
-      const response = await fetch(`${host}/translate`, {
-        method: 'POST',
-        body: formData
-      });
-      await checkResError(response);
-      const fileId = await response.text();
-      // Tutaj możesz obsłużyć przetłumaczony tekst, np. wyświetlić go na stronie
-      console.log(fileId);
-      window.open(`${host}/file/${fileId}`);
-    } catch (error) {
-      handleResError(error);
-    }
-    step2.classList.add('hidden');
-    loading.classList.add('hidden');
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const token = urlParams.get('token');
+  console.log({
+    token
   });
+  if (token) {
+    console.log('Payment done');
+    const downloadButton = document.getElementById('download-button');
+    document.getElementById('upload-container').classList.add('hidden');
+    document.getElementById('highlights').classList.add('hidden');
+    const step4 = document.getElementById('step4');
+    step4.classList.remove('hidden');
+    downloadButton.classList.remove('hidden');
+    downloadButton.addEventListener('click', async () => {
+      step2.classList.add('hidden');
+      loading.classList.remove('hidden');
+
+      // clear input and hide step2
+      //fileInput.value = '';
+      //filenamePreview.textContent = '';
+      try {
+        const response = await fetch(`${host}/translate`, {
+          method: 'POST',
+          body: JSON.stringify({
+            token
+          }),
+          headers: {
+            'Content-Type': 'application/json' // Specify the content type
+          }
+        });
+        await checkResError(response);
+        const fileId = await response.text();
+        console.log(fileId);
+        window.open(`${host}/file/${fileId}`);
+      } catch (error) {
+        handleResError(error);
+      }
+      step2.classList.add('hidden');
+      loading.classList.add('hidden');
+    });
+  }
+  // call endpoint translate and pass token in body
 });
 },{}]},{},["imtx"], null)
