@@ -56,9 +56,11 @@
         <p>Aby przetłumaczyć napisy kliknij tłumacz</p>
     </div>
     <h2 style="color:white; text-align: center;font-size:20px;">No subtitles in your language? Just translate it.</h2>
-    <h2 style="color:white; text-align: center;">No more clumsy translations. Its using AI deep knowledge to provide best subtitles. <br/>No account required. For free.</h2>
+    <h2 style="color:white; text-align: center;">No more clumsy translations. Its using AI deep knowledge to provide best subtitles.
+        <br/>No account required. For free (if you are lucky and there is free quota).</h2>
     <h2 style="color:white; text-align: center;" class="seo">Its free</h2>
-    <h2 style="color:white; text-align: center;">Extensions: .srt, .stl, .sub, .sbv, .ass, .ssa, .vtt, .idx, .txt, .ass</h2>
+    <h2 style="color:white; text-align: center;">Extensions: .srt</h2>
+
     <div class="container">
         <div class="items-center vh-100">
             <form class="flex flex-column dropzone" enctype="multipart/form-data">
@@ -66,12 +68,18 @@
                     <span class="upload-text" id="upload-text"><button type="button" class="btn btn-primary" id="sub-btn">Upload or drop in subtitles</button></span>
                     <span id="filename-preview" class="hidden"></span>
                 </label>
-                <input type="file" name="file" id="file" class="hidden" accept=".srt, .stl, .sub, .sbv, .ass, .ssa, .vtt, .idx, .txt, .ass">
+                <input type="file" name="file" id="file" class="hidden" accept=".srt">
             </form>
-            <div style="text-align: center;width: 100%;" class="hidden" id="step2">
+            <div style="text-align: center;width: 100%;" id="step2" class="hidden">
+                <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="calc-cost">Calculate cost</button>
+                <div class="cost-preview" id="cost-preview"></div>
+            </div>
+
+            <div style="text-align: center;width: 100%;" class="hidden" id="step3">
                 <fieldset>
                     <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language"></label>
                 </fieldset>
+
                 <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="submit">Translate</button>
 
             </div>
