@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
     downloadButton.addEventListener('click', async () => {
       step2.classList.add('hidden');
       loading.classList.remove('hidden');
-
+      downloadButton.classList.add('hidden');
       // clear input and hide step2
       //fileInput.value = '';
       //filenamePreview.textContent = '';
@@ -310,6 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const fileId = await response.text();
         console.log(fileId);
         window.open(`${host}/file/${fileId}`);
+        document.getElementById('loadingSuccess').classList.remove('hidden');
       } catch (error) {
         handleResError(error);
       }

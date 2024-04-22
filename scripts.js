@@ -167,9 +167,10 @@ document.addEventListener("DOMContentLoaded", function() {
         downloadButton.classList.remove('hidden');
 
         downloadButton.addEventListener('click', async () => {
+
             step2.classList.add('hidden');
             loading.classList.remove('hidden');
-
+            downloadButton.classList.add('hidden');
             // clear input and hide step2
             //fileInput.value = '';
             //filenamePreview.textContent = '';
@@ -194,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 console.log(fileId);
                 window.open(`${host}/file/${fileId}`);
-
+                document.getElementById('loadingSuccess').classList.remove('hidden');
             } catch (error) {
                 handleResError(error);
             }
@@ -202,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
             loading.classList.add('hidden');
 
         });
+
     }
     // call endpoint translate and pass token in body
 });
