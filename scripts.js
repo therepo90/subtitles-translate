@@ -91,18 +91,27 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             await checkResError(response);
 
-            const {price, url} = await response.json();
+            const res = await response.json();
+            console.log({res})
+            const {price, url, free, token} = res;
             globals.paymentUrl = url;
             console.log(price, globals.paymentUrl);
-            if(price ==='free'){
-                costPreview.textContent = `You are lucky. Its free.`;
+            if(free){
+                costPreview.textContent = `You are lucky. Its free. Loading...`;
+                // add token to query param
+                setTimeout(() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('token', token);
+                    window.location.replace(url);
+                }, 2000);
             }else {
                 costPreview.textContent = `Cost: ${price}€`;
+                step3.classList.remove('hidden');
                 // costPreview.textContent = `Quota not available. Come back next month or email me.`;
             }
 
             //if(cost === 'free') {
-                step3.classList.remove('hidden');
+
             //}
         } catch (error) {
             handleResError(error);
