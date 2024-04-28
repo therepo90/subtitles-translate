@@ -114,6 +114,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
             //}
         } catch (error) {
+            alert('Quota exceeded. Come back 01 may.');
+            costPreview.textContent = `Quota exceeded. Come back 01 may.`
             handleResError(error);
         }
     });
