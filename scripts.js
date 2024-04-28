@@ -114,10 +114,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
             //}
         } catch (error) {
-            if(error?.message?.toLowerCase().includes('quota')) {
+            // if(error?.message?.toLowerCase().includes('quota')) {
                 alert('Quota exceeded. Come back 01 may.'); // @TODO rmv
                 costPreview.textContent = `Quota exceeded. Come back 01 may.` // @TODO rmv
-            }
+            //}
             handleResError(error);
         }
     });
