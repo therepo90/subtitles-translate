@@ -57,6 +57,7 @@
         <br>No account required. For free (if you are lucky and there is free quota).</h2>
     <h2 style="color:white; text-align: center;" class="seo">Its free</h2>
     <h2 style="color:white; text-align: center;">Extensions: .srt</h2>
+
     </div>
     <div class="container" id="upload-container">
         <div class="items-center vh-100">
@@ -68,8 +69,11 @@
                 <input type="file" name="file" id="file" class="hidden" accept=".srt">
             </form>
             <div style="text-align: center;width: 100%;" id="step2" class="hidden">
+                <h2 style="color:black; text-align: center;">Supported language codes:
+                    en, de, fr, it, es, pt, ja, ko, zh, ru, ar, bg, cs, da, el, et, fi, hu, id, lt, lv, nb, nl, pl, ro, sk, sl, sv, tr, uk
+                </h2>
                 <fieldset>
-                    <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language"></label>
+                    <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language" minlength="2" maxlength="2"></label>
                 </fieldset>
 
                 <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="calc-cost">Calculate cost</button>
@@ -79,7 +83,7 @@
             <div style="text-align: center;width: 100%;" class="hidden" id="step3">
 
                 <div>
-                    <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="checkout-button">Checkout</button>
+                    <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="checkout-button">Pay & translate</button>
                 </div>
                 <!--<div>
                     <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="submit">Translate</button>
@@ -93,7 +97,7 @@
     <div class="container hidden" id="step4" style="text-align: center">
         <div>
             <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="download-button">Download subtitles</button>
-            <div id="loadingDownload" class="hidden">Loading...do not close this window.</div>
+            <div id="loading-download" class="hidden">Loading...do not close this window.</div>
             <div id="loadingSuccess" class="hidden">Loaded. Check popup window in the upper right corner.</div>
         </div>
     </div>

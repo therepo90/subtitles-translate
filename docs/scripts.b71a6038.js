@@ -169,7 +169,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     handleFiles(files);
   });
+  function validateFile(file) {
+    if (!file) {
+      alert("Please select a file.");
+      throw new Error('No file selected.');
+    }
+    const allowedExtensions = ['srt']; // Add more extensions as needed
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      alert("Invalid file type. Allowed extensions: " + allowedExtensions.join(', '));
+
+      // Clear file input
+      fileInput.value = ''; // Reset the value to clear the file input
+      throw new Error('Invalid file type.');
+    }
+  }
   function handleFiles(files) {
+    if (files.length !== 1) {
+      alert('Only one file allowed.');
+      throw new Error('Only one file allowed.');
+    }
+    validateFile(files[0]);
     console.log({
       files
     });
@@ -180,7 +201,13 @@ document.addEventListener("DOMContentLoaded", function () {
     uploadText.classList.add('hidden');
     step2.classList.remove('hidden');
   }
-
+  const languageCodes = ["AR", "BG", "CS", "DA", "DE", "EL", "EN",
+  /*      "EN-GB",
+        "EN-US",*/
+  "ES", "ET", "FI", "FR", "HU", "ID", "IT", "JA", "KO", "LT", "LV", "NB", "NL", "PL", "PT",
+  /*   "PT-BR",
+     "PT-PT",*/
+  "RO", "RU", "SK", "SL", "SV", "TR", "UK", "ZH"];
   // Obsługa przesyłania pliku i tłumaczenia
   calcCost.addEventListener('click', async () => {
     costPreview.textContent = '';
@@ -188,8 +215,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const targetLanguageInput = document.getElementById('target-language');
     const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
     // Sprawdź, czy pole target-language nie jest puste
-    if (!targetLanguage) {
-      alert('Please enter the target language code.');
+    if (!targetLanguage || targetLanguage.length != 2) {
+      alert('Please enter the target 2-letter language code. ');
       return;
     }
     formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
@@ -231,8 +258,8 @@ document.addEventListener("DOMContentLoaded", function () {
       //}
     } catch (error) {
       // if(error?.message?.toLowerCase().includes('quota')) {
-      alert('Quota exceeded. Come back 01 may.'); // @TODO rmv
-      costPreview.textContent = `Quota exceeded. Come back 01 may.`; // @TODO rmv
+      //alert('Quota exceFeded. Come back later.'); // @TODO rmv
+      //costPreview.textContent = `Quota exceeded. Come back 01 may.` // @TODO rmv
       //}
       handleResError(error);
     }
@@ -257,22 +284,22 @@ document.addEventListener("DOMContentLoaded", function () {
         alert(msg);
         throw new Error(msg);
       }
-      let errorMessage = 'Error';
+      let errorMessage = 'Api error';
       try {
         const errorResponse = await response.json();
-        if (errorResponse && errorResponse.message) {
-          errorMessage = errorResponse.message;
+        if (errorResponse && (errorResponse?.message || errorResponse?.error?.message)) {
+          errorMessage = errorResponse?.message || errorResponse?.error?.message;
         }
       } catch (error) {
-        console.error('Error', error);
+        handleResError(error);
       }
       throw new Error(errorMessage);
     }
   };
-  const handleResError = error => {
-    alert(error);
-    console.error('Error:');
-    console.error(error); //
+  const handleResError = errObject => {
+    alert(errObject?.error?.message || errObject?.message || 'Error');
+    console.error('Res error:');
+    console.error(errObject);
   };
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
@@ -283,6 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (token) {
     console.log('Payment done');
     const downloadButton = document.getElementById('download-button');
+    const loadingDownload = document.getElementById('loading-download');
     document.getElementById('upload-container').classList.add('hidden');
     document.getElementById('highlights').classList.add('hidden');
     const step4 = document.getElementById('step4');
@@ -292,6 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
       step2.classList.add('hidden');
       loading.classList.remove('hidden');
       downloadButton.classList.add('hidden');
+      loadingDownload.classList.remove('hidden');
       // clear input and hide step2
       //fileInput.value = '';
       //filenamePreview.textContent = '';
@@ -306,7 +335,8 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
         if (!response.ok && response.status === 401) {
-          const msg = 'Token can be used only once. Check popup window.';
+          const msg = `Token can be used only once. Check popup window.
+                     If you dont have the subtitles, contact therepo90@gmail.com`;
           alert(msg);
           throw new Error(msg);
         }
@@ -315,6 +345,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(fileId);
         window.open(`${host}/file/${fileId}`);
         document.getElementById('loadingSuccess').classList.remove('hidden');
+        loadingDownload.classList.add('hidden');
       } catch (error) {
         handleResError(error);
       }
