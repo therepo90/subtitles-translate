@@ -155,6 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (file && file.size > 350 * 1024) {
       alert('File too big. Max is 350KB.');
       this.value = '';
+      throw new Error('File too big. Max is 350KB.');
     }
     fileInput.files = e.dataTransfer.files;
     handleFiles(files);

@@ -3643,6 +3643,10 @@ select.stack:focus + select {
 .upload-text {
   vertical-align: middle;
 }
+#sub-btn {
+  pointer-events: none;
+  touch-action: none;
+}
 .dropzone {
   border: 2px dashed #ccc;
   padding: 40px;
@@ -3748,10 +3752,6 @@ p {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 20px;
   min-height: 100%;
-}
-#sub-btn {
-  pointer-events: none;
-  touch-action: none;
 }
 .donate {
   max-width: 300px;
