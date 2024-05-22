@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!response.ok) {
       // if 429 say to come back later
       if (response.status === 429) {
-        const msg = 'Too many requests. Please try again in 2 hours.';
+        const msg = 'Too many requests. Please try again next day.';
         alert(msg);
         throw new Error(msg);
       }
