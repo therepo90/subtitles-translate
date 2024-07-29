@@ -200,7 +200,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 alert(msg);
                 throw new Error(msg);
             }
-
             let errorMessage = 'Api error';
             try {
                 const errorResponse = await response.json();
