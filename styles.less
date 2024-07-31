@@ -23,17 +23,21 @@ body {
 .letter {
     display: inline-block;
     animation: colorChange 1s infinite, bend 2s infinite; /* Faster color change */
+
+
 }
 
 /* Animation to bend each letter individually */
 @keyframes bend {
     0%, 100% {
-        transform: rotate(-20deg) translateY(0);
+        transform: rotate(var(--rs)) translateY(var(--ts));
     }
     50% {
-        transform: rotate(20deg) translateY(-20px);
+        transform: rotate(var(--re)) translateY(var(--te));
     }
 }
+
+
 
 /* Animation to change colors */
 @keyframes colorChange {
@@ -46,17 +50,36 @@ body {
 
 /* Individual colors for each letter */
 .letter:nth-child(1) {
+    --ts: 0px;
+    --te: -20px;
+    --rs: 0deg;
+    --re: -20deg;
     animation: colorChange 1s infinite, bend 2s infinite;
 }
 
 .letter:nth-child(2) {
+    --ts: 0px;
+    --te: -25px;
+    --rs: 0deg;
+    --re: -10deg;
+    margin-left: 10px;
     animation: colorChange 1s infinite 0.2s, bend 2s infinite; /* Staggered animation */
 }
 
 .letter:nth-child(3) {
+    --ts: 0px;
+    --te: -25px;
+    --rs: 0deg;
+    --re: 10deg;
+    margin-left: 10px;
     animation: colorChange 1s infinite 0.4s, bend 2s infinite; /* Staggered animation */
 }
 
 .letter:nth-child(4) {
+    --ts: 0px;
+    --te: -20px;
+    --rs: 0deg;
+    --re: 20deg;
+    margin-left: 10px;
     animation: colorChange 1s infinite 0.6s, bend 2s infinite; /* Staggered animation */
 }
