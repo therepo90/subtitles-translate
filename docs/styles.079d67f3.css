@@ -3780,3 +3780,66 @@ body {
   width: 100%;
   font-size: 16px;
 }
+/* Container for animated letters */
+.fancy-letters {
+  display: inline-flex;
+  font-size: 1.2em;
+  /* Adjust font size to match h2 */
+  letter-spacing: -0.1em;
+  /* Reduce spacing between letters */
+}
+/* Each letter style and animation */
+.letter {
+  display: inline-block;
+  animation: colorChange 1s infinite, bend 2s infinite;
+  /* Faster color change */
+}
+/* Animation to bend each letter individually */
+@keyframes bend {
+  0%,
+  100% {
+    transform: rotate(-20deg) translateY(0);
+  }
+  50% {
+    transform: rotate(20deg) translateY(-20px);
+  }
+}
+/* Animation to change colors */
+@keyframes colorChange {
+  0% {
+    color: #ff9999;
+  }
+  /* Light red */
+  25% {
+    color: #99ff99;
+  }
+  /* Light green */
+  50% {
+    color: #9999ff;
+  }
+  /* Light blue */
+  75% {
+    color: #ffff99;
+  }
+  /* Light yellow */
+  100% {
+    color: #ff9999;
+  }
+  /* Light red */
+}
+/* Individual colors for each letter */
+.letter:nth-child(1) {
+  animation: colorChange 1s infinite, bend 2s infinite;
+}
+.letter:nth-child(2) {
+  animation: colorChange 1s infinite 0.2s, bend 2s infinite;
+  /* Staggered animation */
+}
+.letter:nth-child(3) {
+  animation: colorChange 1s infinite 0.4s, bend 2s infinite;
+  /* Staggered animation */
+}
+.letter:nth-child(4) {
+  animation: colorChange 1s infinite 0.6s, bend 2s infinite;
+  /* Staggered animation */
+}
