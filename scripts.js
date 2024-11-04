@@ -224,19 +224,20 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log({token});
     if(token){
         console.log('Payment done');
+        const getTranslationButton = document.getElementById('get-translation-btn');
         const downloadButton = document.getElementById('download-button');
         const loadingDownload = document.getElementById('loading-download');
         document.getElementById('upload-container').classList.add('hidden');
         document.getElementById('highlights').classList.add('hidden');
         const step4 = document.getElementById('step4');
         step4.classList.remove('hidden');
-        downloadButton.classList.remove('hidden');
+        getTranslationButton.classList.remove('hidden');
 
-        downloadButton.addEventListener('click', async () => {
+        getTranslationButton.addEventListener('click', async () => {
 
             step2.classList.add('hidden');
             loading.classList.remove('hidden');
-            downloadButton.classList.add('hidden');
+            getTranslationButton.classList.add('hidden');
             loadingDownload.classList.remove('hidden');
             // clear input and hide step2
             //fileInput.value = '';
@@ -262,7 +263,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 const fileId = await response.text();
 
                 console.log(fileId);
-                window.open(`${host}/file/${fileId}`);
+                let downloadUrl = `${host}/file/${fileId}`;
+                // set url for downloadButton
+                downloadButton.href = downloadUrl;
                 document.getElementById('loadingSuccess').classList.remove('hidden');
                 loadingDownload.classList.add('hidden');
             } catch (error) {
