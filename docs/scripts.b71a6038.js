@@ -318,7 +318,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const step4 = document.getElementById('step4');
     step4.classList.remove('hidden');
     getTranslationButton.classList.remove('hidden');
+    console.log('set up click');
     getTranslationButton.addEventListener('click', async () => {
+      console.log('clicked.');
       step2.classList.add('hidden');
       loading.classList.remove('hidden');
       getTranslationButton.classList.add('hidden');
