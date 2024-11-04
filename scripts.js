@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const step4 = document.getElementById('step4');
         step4.classList.remove('hidden');
         getTranslationButton.classList.remove('hidden');
-console.log('set up click');
+        console.log('set up click');
         getTranslationButton.addEventListener('click', async () => {
             console.log('clicked.');
             step2.classList.add('hidden');
@@ -253,7 +253,7 @@ console.log('set up click');
                     },
                 });
                 if(!response.ok && response.status === 401) {
-                    const msg = `Token can be used only once. Check popup window.
+                    const msg = `Token can be used only once.
                      If you dont have the subtitles, contact therepo90@gmail.com`
                     alert(msg);
                     throw new Error(msg);

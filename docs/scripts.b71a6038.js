@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
         if (!response.ok && response.status === 401) {
-          const msg = `Token can be used only once. Check popup window.
+          const msg = `Token can be used only once.
                      If you dont have the subtitles, contact therepo90@gmail.com`;
           alert(msg);
           throw new Error(msg);
