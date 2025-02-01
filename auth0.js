@@ -1,3 +1,5 @@
+import {apiUrl} from "./cfg";
+
 let auth0Client = null;
 
 export const getAuth0Client = () => {
@@ -30,6 +32,10 @@ export const  updateUI = async () => {
         //document.getElementById("upload-unauth").classList.add("hidden");
         //document.getElementById("upload-container").classList.remove("hidden");
         document.getElementById("gated-content").classList.remove("hidden");
+        // all elements with class logged-in are shown
+        document.querySelectorAll(".logged-in").forEach(el => el.classList.remove("hidden"));
+        document.querySelectorAll(".logged-out").forEach(el => el.classList.add("hidden"));
+
 
         document.getElementById(
             "ipt-access-token"
@@ -40,6 +46,8 @@ export const  updateUI = async () => {
         );
 
     } else {
+        document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));
+        document.querySelectorAll(".logged-out").forEach(el => el.classList.remove("hidden"));
         //document.getElementById("upload-unauth").classList.remove("hidden");
         //document.getElementById("upload-container").classList.add("hidden");
         document.getElementById("gated-content").classList.add("hidden");
@@ -51,7 +59,7 @@ export const  updateUI = async () => {
 window.login = async () => {
     await auth0Client.loginWithRedirect({
         authorizationParams: {
-            redirect_uri: window.location.origin
+            redirect_uri: window.location.origin,
         }
     });
 };
@@ -63,3 +71,24 @@ window.logout = () => {
         }
     });
 };
+
+window.subscribe = async () => {
+    console.log('subscribe');
+    const isAuthenticated = await auth0Client.isAuthenticated();
+    if(!isAuthenticated){
+        window.login();
+        return;
+    }
+    const token = await auth0Client.getTokenSilently();
+    console.log(token);
+    const baseUrl = apiUrl;
+    const response = await fetch(baseUrl+"/api/stripe/checkout-premium", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+    console.log(data);
+}

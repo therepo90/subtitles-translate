@@ -1,6 +1,6 @@
 import {configureClient, getAuth0Client, updateUI} from "./auth0";
+import {apiUrl} from "./cfg";
 
-const host = process.env.LOCAL_DEV ==='true' ? 'http://localhost:3000': 'https://api.translatesubtitles.org';
 //const host = 'http://localhost:3000';
 
 var globals = {
@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         try {
 
-            const response = await fetch(`${host}/check-file`, {
+            const response = await fetch(`${apiUrl}/check-file`, {
                 method: 'POST',
                 body: formData
             });
@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             //fileInput.value = '';
             //filenamePreview.textContent = '';
             try {
-                const response = await fetch(`${host}/translate`, {
+                const response = await fetch(`${apiUrl}/translate`, {
                     method: 'POST',
                     body: JSON.stringify({
                         token
@@ -300,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async function() {
                 const fileId = await response.text();
 
                 console.log(fileId);
-                let downloadUrl = `${host}/file/${fileId}`;
+                let downloadUrl = `${apiUrl}/file/${fileId}`;
                 // set url for downloadButton
                 downloadButton.href = downloadUrl;
                 document.getElementById('loadingSuccess').classList.remove('hidden');
