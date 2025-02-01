@@ -1,23 +1,16 @@
-import {apiUrl} from "./cfg";
+import {apiUrl, auth0Cfg} from "./cfg";
 
 let auth0Client = null;
 
 export const getAuth0Client = () => {
     return auth0Client;
 }
-export const auth0Cfg = {
-    "domain": "translatesubtitles.eu.auth0.com",
-    "clientId": "Yl7KeMwXe4zeLMPz9zIHc33Nircfgxh1"
-}
 
 export const configureClient = async () => {
     console.log('configureClient');
     const config = auth0Cfg;
 
-    auth0Client = await auth0.createAuth0Client({
-        domain: config.domain,
-        clientId: config.clientId
-    });
+    auth0Client = await auth0.createAuth0Client(config);
 };
 
 export const  updateUI = async () => {
