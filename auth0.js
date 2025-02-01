@@ -18,7 +18,6 @@ export const configureClient = async () => {
     });
 };
 
-// NEW
 export const  updateUI = async () => {
     const isAuthenticated = await auth0Client.isAuthenticated();
 
@@ -27,6 +26,9 @@ export const  updateUI = async () => {
 
     // NEW - add logic to show/hide gated content after authentication
     if (isAuthenticated) {
+
+        //document.getElementById("upload-unauth").classList.add("hidden");
+        //document.getElementById("upload-container").classList.remove("hidden");
         document.getElementById("gated-content").classList.remove("hidden");
 
         document.getElementById(
@@ -38,6 +40,8 @@ export const  updateUI = async () => {
         );
 
     } else {
+        //document.getElementById("upload-unauth").classList.remove("hidden");
+        //document.getElementById("upload-container").classList.add("hidden");
         document.getElementById("gated-content").classList.add("hidden");
     }
 };

@@ -108,7 +108,15 @@ document.addEventListener("DOMContentLoaded", async function() {
         }
     }
 
-    function handleFiles(files) {
+    async function handleFiles(files) {
+
+        const isAuthenticated = await getAuth0Client().isAuthenticated();
+        if(!isAuthenticated) {
+            // navigate smoothly to #pricing el
+            document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
+            return;
+        }
+
         if(files.length !== 1) {
             alert('Only one file allowed.');
             throw new Error('Only one file allowed.');

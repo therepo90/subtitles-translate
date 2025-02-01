@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
 
     <link rel="stylesheet" href="./styles.less">
+    <link rel="stylesheet" href="./pricing/style.css">
     <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
     <script src="./scripts.js" defer></script>
 </head>
@@ -50,6 +51,9 @@
     <h2 style="color:white; text-align: center;">Extensions: .srt</h2>
 
     </div>
+    <!--<div class="container" id="upload-unauth" style="text-align: center;">
+        <a style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="upload-bait" href="pricing">Upload subtitles</a>
+    </div>-->
     <div class="container" id="upload-container">
         <div class="items-center vh-100">
             <form class="flex flex-column dropzone" enctype="multipart/form-data">
@@ -100,7 +104,7 @@
         <!--<li>
             No account required.
         </li>-->
-
+<!--
         <li>
             Subtitles are smart and context aware
         </li>
@@ -109,7 +113,7 @@
         </li>
         <li>
             Translates any language to any language
-        </li>
+        </li>-->
         <!--<li>
             Paid quality subs are better than free
         </li>-->
@@ -125,9 +129,9 @@
         <!--<li>
             <b> If you pay once you will get access to any future translated subtitles by this tool</b>(ETA 2025).
         </li>-->
-        <li>
+        <!--<li>
             You can share the subtitles with whoever you want
-        </li>
+        </li>-->
     </ul>
 
     <h2 style="color: white;text-align: center;font-size:18px;">
@@ -150,6 +154,96 @@
         Well, this app lives off my pocket. If you support me you'll be listed here with a
         super-cool stylish avatar with your name and link to your website. (send nick/link via email).
     </h2>-->
+
+
+    <section class="plans__container" id="pricing">
+        <div class="plans">
+            <div class="plansHero">
+                <h1 class="plansHero__titlef">Pricing</h1>
+                <!--<p class="plansHero__subtitle">No contracts. No suprise fees.</p>-->
+            </div>
+            <div class="planItem__container">
+                <!--free plan starts -->
+                <div class="planItem planItem--free">
+
+                    <div class="card">
+                        <div class="card__header">
+                            <div class="card__icon symbol symbol--rounded"></div>
+                            <h2>Standard</h2>
+                        </div>
+                        <!--<div class="card__desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do</div>-->
+                    </div>
+
+                    <div class="price">$3.00<span>/ month</span></div>
+
+                    <ul class="featureList">
+                        <li>25 subtitles</li>
+                        <li>Subtitles are smart and context aware</li>
+                        <li>Complied with SRT</li>
+                        <li>Any language to any language</li>
+                        <li>Share with anybody</li>
+                        <!--<li class="disabled">Chat support</li>
+                        <li class="disabled">Mobile application</li>
+                        <li class="disabled">Unlimited users</li>-->
+                    </ul>
+
+                    <button class="button">Subscribe</button>
+                </div>
+                <!--free plan ends -->
+
+                <!--pro plan starts -->
+                <!--<div class="planItem planItem&#45;&#45;pro">
+                    <div class="card">
+                        <div class="card__header">
+                            <div class="card__icon symbol"></div>
+                            <h2>Pro</h2>
+                            <div class="card__label label">Best Value</div>
+                        </div>
+                        <div class="card__desc">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris</div>
+                    </div>
+
+                    <div class="price">$18<span>/ month</span></div>
+
+                    <ul class="featureList">
+                        <li>2 links</li>
+                        <li>Own analytics platform</li>
+                        <li>Chat support</li>
+                        <li class="disabled">Mobile application</li>
+                        <li class="disabled">Unlimited users</li>
+                    </ul>
+
+                    <button class="button button&#45;&#45;pink">Get Started</button>
+                </div>-->
+                <!--pro plan ends -->
+
+                <!--entp plan starts -->
+                <!--<div class="planItem planItem&#45;&#45;entp">
+                    <div class="card">
+                        <div class="card__header">
+                            <div class="card__icon"></div>
+                            <h2>Enterprise</h2>
+                        </div>
+                        <div class="card__desc">Nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor</div>
+                    </div>
+
+                    <div class="price">Let's Talk</div>
+
+                    <ul class="featureList">
+                        <li>2 links</li>
+                        <li>Own analytics platform</li>
+                        <li>Chat support</li>
+                        <li>Mobile application</li>
+                        <li>Unlimited users</li>
+                        <li>Customize Panel</li>
+                    </ul>
+
+                    <button class="button button&#45;&#45;white">Get Started</button>
+                </div>-->
+                <!--entp plan ends -->
+
+            </div>
+        </div>
+    </section>
     <h2 style="color: white;text-align: center;font-size:18px;">
        Created in collaboration with <a href="https://opensubtitles.org">opensubtitles.org</a> users, especially with great help of:
    </h2>
