@@ -1,12 +1,41 @@
+import {configureClient, getAuth0Client, updateUI} from "./auth0";
+
 const host = process.env.LOCAL_DEV ==='true' ? 'http://localhost:3000': 'https://api.translatesubtitles.org';
 //const host = 'http://localhost:3000';
 
 var globals = {
-    paymentUrl: undefined
+    paymentUrl: undefined,
 };
 
 
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("DOMContentLoaded", async function() {
+
+    await configureClient();
+    await updateUI();
+
+    const isAuthenticated = await getAuth0Client().isAuthenticated();
+
+    if (isAuthenticated) {
+        // show the gated content
+        return;
+    }
+
+    // NEW - check for the code and state parameters
+    const query = window.location.search;
+    if (query.includes("code=") && query.includes("state=")) {
+
+        // Process the login state
+        await getAuth0Client().handleRedirectCallback();
+
+        await updateUI();
+
+        // Use replaceState to redirect the user away and remove the querystring parameters
+        window.history.replaceState({}, document.title, "/");
+    }
+
+
+
     const dropzone = document.querySelector('.dropzone');
     const fileInput = document.getElementById('file');
     const filenamePreview = document.getElementById('filename-preview');

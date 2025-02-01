@@ -31,8 +31,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
 
     <link rel="stylesheet" href="./styles.less">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
     <script src="./scripts.js" defer></script>
-
 </head>
 <body>
 <div class="main">
@@ -204,5 +204,22 @@
     })();
 </script>-->
 <!--End of Tawk.to Script-->
+
+<button id="btn-login" disabled="true" onclick="login()">Log in</button>
+<button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
+<div class="hidden" id="gated-content">
+    <p>
+        You're seeing this content because you're currently
+        <strong>logged in</strong>.
+    </p>
+    <label>
+        Access token:
+        <pre id="ipt-access-token"></pre>
+    </label>
+    <label>
+        User profile:
+        <pre id="ipt-user-profile"></pre>
+    </label>
+</div>
 </body>
 </html>
