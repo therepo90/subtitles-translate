@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     const isAuthenticated = await getAuth0Client().isAuthenticated();
 
     if (isAuthenticated) {
+        console.log('User is authenticated');
         // show the gated content
         return;
     }
@@ -27,10 +28,10 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         // Process the login state
         await getAuth0Client().handleRedirectCallback();
-
         await updateUI();
 
         // Use replaceState to redirect the user away and remove the querystring parameters
+        console.log('Redirecting to remove query params');
         window.history.replaceState({}, document.title, "/");
     }
 

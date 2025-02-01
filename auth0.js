@@ -23,8 +23,8 @@ export const configureClient = async () => {
 export const  updateUI = async () => {
     const isAuthenticated = await auth0Client.isAuthenticated();
 
-    document.getElementById("btn-logout").disabled = !isAuthenticated;
-    document.getElementById("btn-login").disabled = isAuthenticated;
+    /*document.getElementById("btn-logout").disabled = !isAuthenticated;
+    document.getElementById("btn-login").disabled = isAuthenticated;*/
 
     // NEW - add logic to show/hide gated content after authentication
     if (isAuthenticated) {
@@ -35,15 +35,35 @@ export const  updateUI = async () => {
         // all elements with class logged-in are shown
         document.querySelectorAll(".logged-in").forEach(el => el.classList.remove("hidden"));
         document.querySelectorAll(".logged-out").forEach(el => el.classList.add("hidden"));
+        // subbed/unsubbed todo
+        //const token = await auth0Client.getTokenSilently();
 
-
+/*
         document.getElementById(
             "ipt-access-token"
         ).innerHTML = await auth0Client.getTokenSilently();
 
         document.getElementById("ipt-user-profile").textContent = JSON.stringify(
             await auth0Client.getUser()
-        );
+        );*/
+        const token = await auth0Client.getTokenSilently();
+        const baseUrl = apiUrl;
+        const response = await fetch(baseUrl+"/api/user", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        //const data = {premium: false};
+        const userPremium = data.premium;
+        if(userPremium){
+            document.querySelectorAll(".subbed").forEach(el => el.classList.remove("hidden"));
+            document.querySelectorAll(".unsubbed").forEach(el => el.classList.add("hidden"));
+        }else{
+            document.querySelectorAll(".subbed").forEach(el => el.classList.add("hidden"));
+            document.querySelectorAll(".unsubbed").forEach(el => el.classList.remove("hidden"));
+        }
 
     } else {
         document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));

@@ -37,7 +37,13 @@
 </head>
 <body>
 <div class="main">
-    <div style="position:fixed; left:0;top:0;color:white;padding:10px;"><a href="/" style="color:white;text-decoration: underline;">Home</a></div>
+    <div style="position:fixed; left:0;top:0;color:white;padding:10px;" class="nav">
+        <a href="/" style="color:white;text-decoration: underline;">Home</a>
+        <a href="#pricing" style="color:white;text-decoration: underline;">Pricing</a>
+        <a href="#" style="color:white;text-decoration: underline;" class="logged-out" onclick="login()">Log in</a>
+        <a href="#" style="color:white;text-decoration: underline;" class="logged-in" onclick="logout()">Log out</a>
+
+    </div>
     <h1>Translate subtitles(AI Powered)</h1>
     <div id="highlights">
     <h2 style="color:white; text-align: center;font-size:20px;">No subtitles in your language? Just translate it.
@@ -189,7 +195,8 @@
                     </ul>
 
                     <button class="button logged-out" onclick="login()" >Log in to subscribe</button>
-                    <button class="button logged-in" onclick="subscribe()" id="plan-subscribe">Subscribe</button>
+                    <button class="button logged-in unsubbed" onclick="subscribe()" >Subscribe</button>
+                    <button class="button logged-in disabled subbed" disabled>Already subscribed.</button>
                 </div>
                 <!--free plan ends -->
 
@@ -301,10 +308,10 @@
 </script>-->
 <!--End of Tawk.to Script-->
 
-<button id="btn-login" disabled="true" onclick="login()">Log in</button>
-<button id="btn-logout" disabled="true" onclick="logout()">Log out</button>
+<!--<button id="btn-login" disabled="true" onclick="login()">Log in</button>
+<button id="btn-logout" disabled="true" onclick="logout()">Log out</button>-->
 <div class="hidden" id="gated-content">
-    <p>
+   <!-- <p>
         You're seeing this content because you're currently
         <strong>logged in</strong>.
     </p>
@@ -315,7 +322,7 @@
     <label>
         User profile:
         <pre id="ipt-user-profile"></pre>
-    </label>
+    </label>-->
 </div>
 </body>
 </html>
