@@ -9,10 +9,10 @@ var globals = {
 
 
 const setHandlers = async () => {
-    document.getElementById('btn-login').addEventListener('click', async () => {
+    document.getElementById('login-btn').addEventListener('click', async () => {
         login();
     });
-    document.getElementById('btn-logout').addEventListener('click', async () => {
+    document.getElementById('logout-btn').addEventListener('click', async () => {
         logout();
     });
     document.getElementById('pricing-login').addEventListener('click', async () => {
