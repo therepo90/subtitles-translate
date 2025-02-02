@@ -64,14 +64,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         //fileInput.value = '';
         //filenamePreview.textContent = '';
         try {
+
+            const formData = prepareInput();
+            const targetLanguageInput = document.getElementById('target-language');
+            const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+            // Sprawdź, czy pole target-language nie jest puste
+            if (!targetLanguage || targetLanguage.length !=2) {
+                alert('Please enter the target 2-letter language code. ');
+                return;
+            }
+            formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
+
             const token = await getAuth0Client().getTokenSilently();
-            const response = await fetch(`${apiUrl}/translate`, {
+            const response = await fetch(`${apiUrl}/api/translate`, {
                 method: 'POST',
-                body: JSON.stringify({
-                    token
-                }),
+                body: formData,
                 headers: {
-                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
                 },
             });
