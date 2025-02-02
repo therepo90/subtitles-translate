@@ -126,11 +126,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.auth0Cfg = exports.apiUrl = void 0;
 const apiUrl = exports.apiUrl = "false" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
 //export const baseUrl = process.env.LOCAL_DEV === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+const redirectUrl = "false" === 'true' ? 'http://localhost:1234' : 'https://translatesubtitles.org';
 const auth0Cfg = exports.auth0Cfg = {
   "domain": "translatesubtitles.eu.auth0.com",
   "clientId": "Yl7KeMwXe4zeLMPz9zIHc33Nircfgxh1",
   authorizationParams: {
-    redirect_uri: 'http://localhost:1234',
+    redirect_uri: redirectUrl,
     audience: 'https://translatesubtitles'
   }
 };
