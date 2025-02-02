@@ -6,7 +6,7 @@
   "scripts": {
     "start": "rm -rf dist && parcel index.html",
     "build": "rm -rf dist && parcel build index.html --experimental-scope-hoisting",
-    "build:prod": "rm -rf docs/* && cross-env NODE_ENV=production LOCAL_DEV=false parcel build index.html --no-source-maps --no-content-hash -t browser -d docs --no-minify --public-url ./ && cp CNAME docs && cp bg1.jpg docs",
+    "build:prod": "rm -rf docs/* && cross-env NODE_ENV=production LOCAL_DEV=false parcel build index.html --no-source-maps -t browser -d docs --no-minify --public-url ./ && cp CNAME docs && cp bg1.jpg docs",
     "acp": "git add . && git commit -m \"x\" --allow-empty && git push -u",
     "deploy": "npm run build:prod && npm run acp"
   },
