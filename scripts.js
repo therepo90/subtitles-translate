@@ -222,28 +222,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         return formData;
     }
     const checkResError = async (response) => {
-
         if (!response.ok) {
-            // if 429 say to come back later
-            if (response.status === 429) {
-                const msg = 'Too many requests. Please try again next day.'
-                alert(msg);
-                throw new Error(msg);
+            let err;
+            try{
+                err = await response.clone().json()
             }
-            let errorMessage = 'Api error';
-            try {
-                const errorResponse = await response.json();
-                if (errorResponse && (errorResponse?.message || errorResponse?.error?.message)) {
-                    errorMessage = errorResponse?.message || errorResponse?.error?.message;
-                }
-            } catch (error) {
-                handleResError(error);
+            catch(e){
+                err = await response.text();
             }
-            throw new Error(errorMessage);
+            handleResError(err);
+            throw new Error(err);
         }
     }
     const handleResError = (errObject) => {
-        alert(errObject?.error?.message || errObject?.message || 'Error');
+        let msg = errObject?.error?.message || errObject?.message;
+        if(typeof errObject  === 'string'){
+            msg = errObject;
+        }
+        alert(msg || 'Error');
         console.error('Res error:');
         console.error(errObject);
     }
