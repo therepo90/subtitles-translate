@@ -37,6 +37,7 @@ export const fetchMyUser = async () => {
 };
 
 export const  updateUI = async () => {
+
     const isAuthenticated = await auth0Client.isAuthenticated();
 
     /*document.getElementById("btn-logout").disabled = !isAuthenticated;

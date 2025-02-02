@@ -320,6 +320,10 @@ const setHandlers = async () => {
 };
 document.addEventListener("DOMContentLoaded", async function () {
   console.log('DOMContentLoaded init...');
+  document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));
+  document.querySelectorAll(".subbed").forEach(el => el.classList.add("hidden"));
+  document.querySelectorAll(".logged-out").forEach(el => el.classList.remove("hidden"));
+  document.querySelectorAll(".unsubbed").forEach(el => el.classList.add("hidden"));
   await setHandlers();
   await (0, _auth.configureClient)();
   await (0, _auth.updateUI)();
