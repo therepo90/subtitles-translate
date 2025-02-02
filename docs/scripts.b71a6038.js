@@ -140,7 +140,7 @@ const auth0Cfg = exports.auth0Cfg = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateUI = exports.getAuth0Client = exports.configureClient = void 0;
+exports.updateUI = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.configureClient = void 0;
 var _cfg = require("./cfg");
 let auth0Client = null;
 const getAuth0Client = () => {
@@ -207,25 +207,27 @@ const updateUI = async () => {
 
 // ..
 exports.updateUI = updateUI;
-window.login = async () => {
+const login = async () => {
   await auth0Client.loginWithRedirect({
     authorizationParams: {
       redirect_uri: window.location.origin
     }
   });
 };
-window.logout = () => {
+exports.login = login;
+const logout = () => {
   auth0Client.logout({
     logoutParams: {
       returnTo: window.location.origin
     }
   });
 };
-window.subscribe = async () => {
+exports.logout = logout;
+const subscribe = async () => {
   console.log('subscribe');
   const isAuthenticated = await auth0Client.isAuthenticated();
   if (!isAuthenticated) {
-    window.login();
+    login();
     return;
   }
   const token = await auth0Client.getTokenSilently();
@@ -242,6 +244,7 @@ window.subscribe = async () => {
   console.log('rdr');
   window.location.href = data.url;
 };
+exports.subscribe = subscribe;
 },{"./cfg":"mhI4"}],"imtx":[function(require,module,exports) {
 "use strict";
 
@@ -252,7 +255,22 @@ var _cfg = require("./cfg");
 var globals = {
   paymentUrl: undefined
 };
+const setHandlers = async () => {
+  document.getElementById('btn-login').addEventListener('click', async () => {
+    (0, _auth.login)();
+  });
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    (0, _auth.logout)();
+  });
+  document.getElementById('pricing-login').addEventListener('click', async () => {
+    (0, _auth.login)();
+  });
+  document.getElementById('pricing-sub').addEventListener('click', async () => {
+    (0, _auth.subscribe)();
+  });
+};
 document.addEventListener("DOMContentLoaded", async function () {
+  await setHandlers();
   await (0, _auth.configureClient)();
   await (0, _auth.updateUI)();
   const isAuthenticated = await (0, _auth.getAuth0Client)().isAuthenticated();

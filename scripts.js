@@ -1,4 +1,4 @@
-import {configureClient, getAuth0Client, updateUI} from "./auth0";
+import {configureClient, getAuth0Client, login, logout, subscribe, updateUI} from "./auth0";
 import {apiUrl} from "./cfg";
 
 //const host = 'http://localhost:3000';
@@ -8,8 +8,24 @@ var globals = {
 };
 
 
+const setHandlers = async () => {
+    document.getElementById('btn-login').addEventListener('click', async () => {
+        login();
+    });
+    document.getElementById('btn-logout').addEventListener('click', async () => {
+        logout();
+    });
+    document.getElementById('pricing-login').addEventListener('click', async () => {
+        login();
+    });
+    document.getElementById('pricing-sub').addEventListener('click', async () => {
+        subscribe();
+    });
+};
+
 document.addEventListener("DOMContentLoaded", async function () {
 
+    await setHandlers();
     await configureClient();
     await updateUI();
 

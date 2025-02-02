@@ -69,7 +69,7 @@ export const  updateUI = async () => {
 
 // ..
 
-window.login = async () => {
+export const login = async () => {
     await auth0Client.loginWithRedirect({
         authorizationParams: {
             redirect_uri: window.location.origin,
@@ -77,7 +77,7 @@ window.login = async () => {
     });
 };
 
-window.logout = () => {
+export const logout = () => {
     auth0Client.logout({
         logoutParams: {
             returnTo: window.location.origin
@@ -85,11 +85,11 @@ window.logout = () => {
     });
 };
 
-window.subscribe = async () => {
+export const subscribe = async () => {
     console.log('subscribe');
     const isAuthenticated = await auth0Client.isAuthenticated();
     if(!isAuthenticated){
-        window.login();
+        login();
         return;
     }
     const token = await auth0Client.getTokenSilently();

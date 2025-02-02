@@ -36,8 +36,8 @@
     <div style="position:fixed; left:0;top:0;color:white;padding:10px;" class="nav">
         <a href="/" style="color:white;text-decoration: underline;">Home</a>
         <a href="#pricing" style="color:white;text-decoration: underline;">Pricing</a>
-        <a href="#" style="color:white;text-decoration: underline;" class="logged-out" onclick="login()">Log in</a>
-        <a href="#" style="color:white;text-decoration: underline;" class="logged-in" onclick="logout()">Log out</a>
+        <a href="#" style="color:white;text-decoration: underline;" class="logged-out" id="login-btn">Log in</a>
+        <a href="#" style="color:white;text-decoration: underline;" class="logged-in" id="logout-btn">Log out</a>
 
     </div>
     <h1>Translate subtitles(AI Powered)</h1>
@@ -179,8 +179,8 @@
                         <li class="disabled">Unlimited users</li>-->
                     </ul>
 
-                    <button class="button logged-out" onclick="login()">Log in to subscribe</button>
-                    <button class="button logged-in unsubbed" onclick="subscribe()">Subscribe</button>
+                    <button class="button logged-out" id="pricing-login">Log in to subscribe</button>
+                    <button class="button logged-in unsubbed" id="pricing-sub">Subscribe</button>
                     <button class="button logged-in disabled subbed" disabled="">Already subscribed.</button>
                 </div>
                 <!--free plan ends -->
