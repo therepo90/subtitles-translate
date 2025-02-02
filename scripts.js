@@ -8,8 +8,7 @@ var globals = {
 };
 
 
-
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener("DOMContentLoaded", async function () {
 
     await configureClient();
     await updateUI();
@@ -18,23 +17,21 @@ document.addEventListener("DOMContentLoaded", async function() {
 
     if (isAuthenticated) {
         console.log('User is authenticated');
-        // show the gated content
-        return;
     }
-
     // NEW - check for the code and state parameters
-    const query = window.location.search;
-    if (query.includes("code=") && query.includes("state=")) {
+    if (!isAuthenticated) {
+        const query = window.location.search;
+        if (query.includes("code=") && query.includes("state=")) {
 
-        // Process the login state
-        await getAuth0Client().handleRedirectCallback();
-        await updateUI();
+            // Process the login state
+            await getAuth0Client().handleRedirectCallback();
+            await updateUI();
 
-        // Use replaceState to redirect the user away and remove the querystring parameters
-        console.log('Redirecting to remove query params');
-        window.history.replaceState({}, document.title, "/");
+            // Use replaceState to redirect the user away and remove the querystring parameters
+            console.log('Redirecting to remove query params');
+            window.history.replaceState({}, document.title, "/");
+        }
     }
-
 
 
     const dropzone = document.querySelector('.dropzone');
@@ -44,17 +41,56 @@ document.addEventListener("DOMContentLoaded", async function() {
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
     const loading = document.getElementById('loading');
-    const calcCost = document.getElementById('calc-cost');
-    const costPreview = document.getElementById('cost-preview');
 
 
-    async function redirectToCheckout() {
-        console.log('Redirecting to' + globals.paymentUrl);
-        window.open(globals.paymentUrl);
-    }
+    const getTranslationButton = document.getElementById('get-translation-btn');
+    getTranslationButton.addEventListener('click', async () => {
+        console.log('clicked.');
 
-    const checkoutButton = document.getElementById('checkout-button');
-    checkoutButton.addEventListener('click', () => redirectToCheckout());
+        const downloadButton = document.getElementById('download-button');
+        const loadingDownload = document.getElementById('loading-download');
+        document.getElementById('upload-container').classList.add('hidden');
+        document.getElementById('highlights').classList.add('hidden');
+        const step4 = document.getElementById('step4');
+        step4.classList.remove('hidden');
+        getTranslationButton.classList.remove('hidden');
+        console.log('set up click');
+
+        step2.classList.add('hidden');
+        loading.classList.remove('hidden');
+        getTranslationButton.classList.add('hidden');
+        loadingDownload.classList.remove('hidden');
+        // clear input and hide step2
+        //fileInput.value = '';
+        //filenamePreview.textContent = '';
+        try {
+            const token = await getAuth0Client().getTokenSilently();
+            const response = await fetch(`${apiUrl}/translate`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    token
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+            });
+            await checkResError(response);
+            const fileId = await response.text();
+            console.log(fileId);
+            let downloadUrl = `${apiUrl}/file/${fileId}`;
+            // set url for downloadButton
+            downloadButton.href = downloadUrl;
+            document.getElementById('loadingSuccess').classList.remove('hidden');
+            loadingDownload.classList.add('hidden');
+        } catch (error) {
+            handleResError(error);
+        }
+        step2.classList.add('hidden');
+        loading.classList.add('hidden');
+
+    });
+
 
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -112,13 +148,13 @@ document.addEventListener("DOMContentLoaded", async function() {
     async function handleFiles(files) {
 
         const isAuthenticated = await getAuth0Client().isAuthenticated();
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
             // navigate smoothly to #pricing el
             document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
             return;
         }
 
-        if(files.length !== 1) {
+        if (files.length !== 1) {
             alert('Only one file allowed.');
             throw new Error('Only one file allowed.');
         }
@@ -141,8 +177,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         "DE",
         "EL",
         "EN",
-  /*      "EN-GB",
-        "EN-US",*/
+        /*      "EN-GB",
+              "EN-US",*/
         "ES",
         "ET",
         "FI",
@@ -158,8 +194,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         "NL",
         "PL",
         "PT",
-     /*   "PT-BR",
-        "PT-PT",*/
+        /*   "PT-BR",
+           "PT-PT",*/
         "RO",
         "RU",
         "SK",
@@ -169,58 +205,6 @@ document.addEventListener("DOMContentLoaded", async function() {
         "UK",
         "ZH"
     ];
-    // Obsługa przesyłania pliku i tłumaczenia
-    calcCost.addEventListener('click', async () => {
-        costPreview.textContent='';
-
-        const formData = prepareInput();
-        const targetLanguageInput = document.getElementById('target-language');
-        const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
-        // Sprawdź, czy pole target-language nie jest puste
-        if (!targetLanguage || targetLanguage.length !=2) {
-            alert('Please enter the target 2-letter language code. ');
-            return;
-        }
-        formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
-
-        try {
-
-            const response = await fetch(`${apiUrl}/check-file`, {
-                method: 'POST',
-                body: formData
-            });
-            await checkResError(response);
-
-            const res = await response.json();
-            console.log({res})
-            const {price, url, free, token} = res;
-            globals.paymentUrl = url;
-            console.log(price, globals.paymentUrl);
-            if(free){
-                costPreview.textContent = `You are lucky. Its free. Loading...`;
-                // add token to query param
-                setTimeout(() => {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('token', token);
-                    window.location.replace(url);
-                }, 2000);
-            }else {
-                costPreview.textContent = `Cost: ${price}€`;
-                step3.classList.remove('hidden');
-                // costPreview.textContent = `Quota not available. Come back next month or email me.`;
-            }
-
-            //if(cost === 'free') {
-
-            //}
-        } catch (error) {
-            // if(error?.message?.toLowerCase().includes('quota')) {
-                //alert('Quota exceFeded. Come back later.'); // @TODO rmv
-                //costPreview.textContent = `Quota exceeded. Come back 01 may.` // @TODO rmv
-            //}
-            handleResError(error);
-        }
-    });
     const prepareInput = () => {
         const file = fileInput.files[fileInput.files.length - 1];
         console.log({fileInput})
@@ -233,7 +217,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
         if (!response.ok) {
             // if 429 say to come back later
-            if(response.status === 429) {
+            if (response.status === 429) {
                 const msg = 'Too many requests. Please try again next day.'
                 alert(msg);
                 throw new Error(msg);
@@ -255,65 +239,4 @@ document.addEventListener("DOMContentLoaded", async function() {
         console.error('Res error:');
         console.error(errObject);
     }
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-
-    const token = urlParams.get('token');
-    console.log({token});
-    if(token){
-        console.log('Payment done');
-        const getTranslationButton = document.getElementById('get-translation-btn');
-        const downloadButton = document.getElementById('download-button');
-        const loadingDownload = document.getElementById('loading-download');
-        document.getElementById('upload-container').classList.add('hidden');
-        document.getElementById('highlights').classList.add('hidden');
-        const step4 = document.getElementById('step4');
-        step4.classList.remove('hidden');
-        getTranslationButton.classList.remove('hidden');
-        console.log('set up click');
-        getTranslationButton.addEventListener('click', async () => {
-            console.log('clicked.');
-            step2.classList.add('hidden');
-            loading.classList.remove('hidden');
-            getTranslationButton.classList.add('hidden');
-            loadingDownload.classList.remove('hidden');
-            // clear input and hide step2
-            //fileInput.value = '';
-            //filenamePreview.textContent = '';
-            try {
-                const response = await fetch(`${apiUrl}/translate`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        token
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json' // Specify the content type
-                    },
-                });
-                if(!response.ok && response.status === 401) {
-                    const msg = `Token can be used only once.
-                     If you dont have the subtitles, contact therepo90@gmail.com`
-                    alert(msg);
-                    throw new Error(msg);
-                }
-                await checkResError(response);
-
-                const fileId = await response.text();
-
-                console.log(fileId);
-                let downloadUrl = `${apiUrl}/file/${fileId}`;
-                // set url for downloadButton
-                downloadButton.href = downloadUrl;
-                document.getElementById('loadingSuccess').classList.remove('hidden');
-                loadingDownload.classList.add('hidden');
-            } catch (error) {
-                handleResError(error);
-            }
-            step2.classList.add('hidden');
-            loading.classList.add('hidden');
-
-        });
-
-    }
-    // call endpoint translate and pass token in body
 });

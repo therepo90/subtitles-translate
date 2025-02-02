@@ -77,18 +77,7 @@
                     <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language" minlength="2" maxlength="2"></label>
                 </fieldset>
 
-                <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="calc-cost">Calculate cost</button>
-                <div class="cost-preview" id="cost-preview"></div>
-            </div>
-
-            <div style="text-align: center;width: 100%;" class="hidden" id="step3">
-
-                <div>
-                    <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="checkout-button">Pay & translate</button>
-                </div>
-                <!--<div>
-                    <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="submit">Translate</button>
-                </div>-->
+                <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="get-translation-btn">Translate</button>
             </div>
             <div id="loading" class="hidden">Loading...</div>
         </div>
@@ -97,7 +86,7 @@
     </div>
     <div class="container hidden" id="step4" style="text-align: center">
         <div>
-            <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="get-translation-btn">Click to get translation</button>
+            <!--<button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="get-translation-btn">Click to get translation</button>-->
             <div id="loading-download" class="hidden">Loading...do not close this window and do not refresh the page.(It may take up to 1 minute).</div>
             <div id="loadingSuccess" class="hidden">
                 Loaded.

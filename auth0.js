@@ -104,4 +104,6 @@ window.subscribe = async () => {
 
     const data = await response.json();
     console.log(data);
+    console.log('rdr');
+    window.location.href = data.url;
 }
