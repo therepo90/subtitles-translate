@@ -459,8 +459,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.getElementById('pricing').scrollIntoView({
           behavior: 'smooth'
         });
+        return;
       }
-      return;
     } else {
       // navigate smoothly to #pricing el
       document.getElementById('pricing').scrollIntoView({

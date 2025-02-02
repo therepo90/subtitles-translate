@@ -185,8 +185,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log({user})
                 if(!user.premium){
                     document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
+                    return;
                 }
-                return;
         } else {
             // navigate smoothly to #pricing el
             document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
