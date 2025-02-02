@@ -8,10 +8,16 @@ export const getAuth0Client = () => {
 
 export const configureClient = async () => {
     const config = auth0Cfg;
-    console.log('configureClient...', window.auth0, config);
-
-    auth0Client = await window.auth0.createAuth0Client(config);
-    console.log('configured.');
+    try {
+        console.log('configureClient...', window.auth0, config);
+        auth0Client = await window.auth0.createAuth0Client(config);
+        console.log('configured.');
+    }
+    catch (err) {
+        console.error('Error configuring Auth0 client', err);
+        alert('Error');
+        throw err;
+    }
 };
 
 export const  updateUI = async () => {
