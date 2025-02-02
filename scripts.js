@@ -24,7 +24,7 @@ const setHandlers = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", async function () {
-
+    console.log('DOMContentLoaded init...');
     await setHandlers();
     await configureClient();
     await updateUI();
@@ -193,70 +193,75 @@ document.addEventListener("DOMContentLoaded", async function () {
         step2.classList.remove('hidden');
     }
 
-    const languageCodes = [
-        "AR",
-        "BG",
-        "CS",
-        "DA",
-        "DE",
-        "EL",
-        "EN",
-        /*      "EN-GB",
-              "EN-US",*/
-        "ES",
-        "ET",
-        "FI",
-        "FR",
-        "HU",
-        "ID",
-        "IT",
-        "JA",
-        "KO",
-        "LT",
-        "LV",
-        "NB",
-        "NL",
-        "PL",
-        "PT",
-        /*   "PT-BR",
-           "PT-PT",*/
-        "RO",
-        "RU",
-        "SK",
-        "SL",
-        "SV",
-        "TR",
-        "UK",
-        "ZH"
-    ];
-    const prepareInput = () => {
-        const file = fileInput.files[fileInput.files.length - 1];
-        console.log({fileInput})
-        console.log({file})
-        const formData = new FormData();
-        formData.append('file', file);
-        return formData;
-    }
-    const checkResError = async (response) => {
-        if (!response.ok) {
-            let err;
-            try{
-                err = await response.clone().json()
-            }
-            catch(e){
-                err = await response.text();
-            }
-            handleResError(err);
-            throw new Error(err);
-        }
-    }
-    const handleResError = (errObject) => {
-        let msg = errObject?.error?.message || errObject?.message;
-        if(typeof errObject  === 'string'){
-            msg = errObject;
-        }
-        alert(msg || 'Error');
-        console.error('Res error:');
-        console.error(errObject);
-    }
+    console.log('DOMContentLoaded done.');
 });
+
+
+
+const languageCodes = [
+    "AR",
+    "BG",
+    "CS",
+    "DA",
+    "DE",
+    "EL",
+    "EN",
+    /*      "EN-GB",
+          "EN-US",*/
+    "ES",
+    "ET",
+    "FI",
+    "FR",
+    "HU",
+    "ID",
+    "IT",
+    "JA",
+    "KO",
+    "LT",
+    "LV",
+    "NB",
+    "NL",
+    "PL",
+    "PT",
+    /*   "PT-BR",
+       "PT-PT",*/
+    "RO",
+    "RU",
+    "SK",
+    "SL",
+    "SV",
+    "TR",
+    "UK",
+    "ZH"
+];
+const prepareInput = () => {
+    const file = fileInput.files[fileInput.files.length - 1];
+    console.log({fileInput})
+    console.log({file})
+    const formData = new FormData();
+    formData.append('file', file);
+    return formData;
+}
+const checkResError = async (response) => {
+    if (!response.ok) {
+        let err;
+        try{
+            err = await response.clone().json()
+        }
+        catch(e){
+            err = await response.text();
+        }
+        handleResError(err);
+        throw new Error(err);
+    }
+}
+
+const handleResError = (errObject) => {
+    let msg = errObject?.error?.message || errObject?.message;
+    if(typeof errObject  === 'string'){
+        msg = errObject;
+    }
+    alert(msg || 'Error');
+    console.error('Res error:');
+    console.error(errObject);
+}
