@@ -3772,6 +3772,16 @@ p {
     align-items: center;
   }
 }
+.hidden {
+  display: none !important;
+}
+.nav a {
+  font-size: 16px;
+  padding: 8px 2px;
+}
+html {
+  scroll-behavior: smooth;
+}
 body {
   font-size: 16px;
 }

@@ -117,14 +117,161 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"imtx":[function(require,module,exports) {
-const host = "false" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+})({"mhI4":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.auth0Cfg = exports.apiUrl = void 0;
+const apiUrl = exports.apiUrl = "false" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+//export const baseUrl = process.env.LOCAL_DEV === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+const auth0Cfg = exports.auth0Cfg = {
+  "domain": "translatesubtitles.eu.auth0.com",
+  "clientId": "Yl7KeMwXe4zeLMPz9zIHc33Nircfgxh1",
+  authorizationParams: {
+    redirect_uri: 'http://localhost:1234',
+    audience: 'https://translatesubtitles'
+  }
+};
+},{}],"hW48":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.updateUI = exports.getAuth0Client = exports.configureClient = void 0;
+var _cfg = require("./cfg");
+let auth0Client = null;
+const getAuth0Client = () => {
+  return auth0Client;
+};
+exports.getAuth0Client = getAuth0Client;
+const configureClient = async () => {
+  console.log('configureClient');
+  const config = _cfg.auth0Cfg;
+  auth0Client = await auth0.createAuth0Client(config);
+};
+exports.configureClient = configureClient;
+const updateUI = async () => {
+  const isAuthenticated = await auth0Client.isAuthenticated();
+
+  /*document.getElementById("btn-logout").disabled = !isAuthenticated;
+  document.getElementById("btn-login").disabled = isAuthenticated;*/
+
+  // NEW - add logic to show/hide gated content after authentication
+  if (isAuthenticated) {
+    //document.getElementById("upload-unauth").classList.add("hidden");
+    //document.getElementById("upload-container").classList.remove("hidden");
+    document.getElementById("gated-content").classList.remove("hidden");
+    // all elements with class logged-in are shown
+    document.querySelectorAll(".logged-in").forEach(el => el.classList.remove("hidden"));
+    document.querySelectorAll(".logged-out").forEach(el => el.classList.add("hidden"));
+    // subbed/unsubbed todo
+    //const token = await auth0Client.getTokenSilently();
+
+    /*
+            document.getElementById(
+                "ipt-access-token"
+            ).innerHTML = await auth0Client.getTokenSilently();
+    
+            document.getElementById("ipt-user-profile").textContent = JSON.stringify(
+                await auth0Client.getUser()
+            );*/
+    const token = await auth0Client.getTokenSilently();
+    const baseUrl = _cfg.apiUrl;
+    const response = await fetch(baseUrl + "/api/user", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await response.json();
+    //const data = {premium: false};
+    const userPremium = data.premium;
+    if (userPremium) {
+      document.querySelectorAll(".subbed").forEach(el => el.classList.remove("hidden"));
+      document.querySelectorAll(".unsubbed").forEach(el => el.classList.add("hidden"));
+    } else {
+      document.querySelectorAll(".subbed").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".unsubbed").forEach(el => el.classList.remove("hidden"));
+    }
+  } else {
+    document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));
+    document.querySelectorAll(".logged-out").forEach(el => el.classList.remove("hidden"));
+    //document.getElementById("upload-unauth").classList.remove("hidden");
+    //document.getElementById("upload-container").classList.add("hidden");
+    document.getElementById("gated-content").classList.add("hidden");
+  }
+};
+
+// ..
+exports.updateUI = updateUI;
+window.login = async () => {
+  await auth0Client.loginWithRedirect({
+    authorizationParams: {
+      redirect_uri: window.location.origin
+    }
+  });
+};
+window.logout = () => {
+  auth0Client.logout({
+    logoutParams: {
+      returnTo: window.location.origin
+    }
+  });
+};
+window.subscribe = async () => {
+  console.log('subscribe');
+  const isAuthenticated = await auth0Client.isAuthenticated();
+  if (!isAuthenticated) {
+    window.login();
+    return;
+  }
+  const token = await auth0Client.getTokenSilently();
+  console.log(token);
+  const baseUrl = _cfg.apiUrl;
+  const response = await fetch(baseUrl + "/api/stripe/checkout-premium", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  const data = await response.json();
+  console.log(data);
+  console.log('rdr');
+  window.location.href = data.url;
+};
+},{"./cfg":"mhI4"}],"imtx":[function(require,module,exports) {
+"use strict";
+
+var _auth = require("./auth0");
+var _cfg = require("./cfg");
 //const host = 'http://localhost:3000';
 
 var globals = {
   paymentUrl: undefined
 };
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  await (0, _auth.configureClient)();
+  await (0, _auth.updateUI)();
+  const isAuthenticated = await (0, _auth.getAuth0Client)().isAuthenticated();
+  if (isAuthenticated) {
+    console.log('User is authenticated');
+  }
+  // NEW - check for the code and state parameters
+  if (!isAuthenticated) {
+    const query = window.location.search;
+    if (query.includes("code=") && query.includes("state=")) {
+      // Process the login state
+      await (0, _auth.getAuth0Client)().handleRedirectCallback();
+      await (0, _auth.updateUI)();
+
+      // Use replaceState to redirect the user away and remove the querystring parameters
+      console.log('Redirecting to remove query params');
+      window.history.replaceState({}, document.title, "/");
+    }
+  }
   const dropzone = document.querySelector('.dropzone');
   const fileInput = document.getElementById('file');
   const filenamePreview = document.getElementById('filename-preview');
@@ -132,14 +279,57 @@ document.addEventListener("DOMContentLoaded", function () {
   const step2 = document.getElementById('step2');
   const step3 = document.getElementById('step3');
   const loading = document.getElementById('loading');
-  const calcCost = document.getElementById('calc-cost');
-  const costPreview = document.getElementById('cost-preview');
-  async function redirectToCheckout() {
-    console.log('Redirecting to' + globals.paymentUrl);
-    window.open(globals.paymentUrl);
-  }
-  const checkoutButton = document.getElementById('checkout-button');
-  checkoutButton.addEventListener('click', () => redirectToCheckout());
+  const getTranslationButton = document.getElementById('get-translation-btn');
+  getTranslationButton.addEventListener('click', async () => {
+    console.log('clicked.');
+    const downloadButton = document.getElementById('download-button');
+    const loadingDownload = document.getElementById('loading-download');
+    document.getElementById('upload-container').classList.add('hidden');
+    document.getElementById('highlights').classList.add('hidden');
+    const step4 = document.getElementById('step4');
+    step4.classList.remove('hidden');
+    getTranslationButton.classList.remove('hidden');
+    console.log('set up click');
+    step2.classList.add('hidden');
+    loading.classList.remove('hidden');
+    getTranslationButton.classList.add('hidden');
+    loadingDownload.classList.remove('hidden');
+    // clear input and hide step2
+    //fileInput.value = '';
+    //filenamePreview.textContent = '';
+    try {
+      const formData = prepareInput();
+      const targetLanguageInput = document.getElementById('target-language');
+      const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+      // Sprawdź, czy pole target-language nie jest puste
+      if (!targetLanguage || targetLanguage.length != 2) {
+        alert('Please enter the target 2-letter language code. ');
+        return;
+      }
+      formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
+
+      const token = await (0, _auth.getAuth0Client)().getTokenSilently();
+      const response = await fetch(`${_cfg.apiUrl}/api/translate`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      await checkResError(response);
+      const fileId = await response.text();
+      console.log(fileId);
+      let downloadUrl = `${_cfg.apiUrl}/file/${fileId}`;
+      // set url for downloadButton
+      downloadButton.href = downloadUrl;
+      document.getElementById('loadingSuccess').classList.remove('hidden');
+      loadingDownload.classList.add('hidden');
+    } catch (error) {
+      handleResError(error);
+    }
+    step2.classList.add('hidden');
+    loading.classList.add('hidden');
+  });
   dropzone.addEventListener('dragover', e => {
     e.preventDefault();
     dropzone.classList.add('drag-over');
@@ -186,7 +376,15 @@ document.addEventListener("DOMContentLoaded", function () {
       throw new Error('Invalid file type.');
     }
   }
-  function handleFiles(files) {
+  async function handleFiles(files) {
+    const isAuthenticated = await (0, _auth.getAuth0Client)().isAuthenticated();
+    if (!isAuthenticated) {
+      // navigate smoothly to #pricing el
+      document.getElementById('pricing').scrollIntoView({
+        behavior: 'smooth'
+      });
+      return;
+    }
     if (files.length !== 1) {
       alert('Only one file allowed.');
       throw new Error('Only one file allowed.');
@@ -209,62 +407,6 @@ document.addEventListener("DOMContentLoaded", function () {
   /*   "PT-BR",
      "PT-PT",*/
   "RO", "RU", "SK", "SL", "SV", "TR", "UK", "ZH"];
-  // Obsługa przesyłania pliku i tłumaczenia
-  calcCost.addEventListener('click', async () => {
-    costPreview.textContent = '';
-    const formData = prepareInput();
-    const targetLanguageInput = document.getElementById('target-language');
-    const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
-    // Sprawdź, czy pole target-language nie jest puste
-    if (!targetLanguage || targetLanguage.length != 2) {
-      alert('Please enter the target 2-letter language code. ');
-      return;
-    }
-    formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
-
-    try {
-      const response = await fetch(`${host}/check-file`, {
-        method: 'POST',
-        body: formData
-      });
-      await checkResError(response);
-      const res = await response.json();
-      console.log({
-        res
-      });
-      const {
-        price,
-        url,
-        free,
-        token
-      } = res;
-      globals.paymentUrl = url;
-      console.log(price, globals.paymentUrl);
-      if (free) {
-        costPreview.textContent = `You are lucky. Its free. Loading...`;
-        // add token to query param
-        setTimeout(() => {
-          const url = new URL(window.location.href);
-          url.searchParams.set('token', token);
-          window.location.replace(url);
-        }, 2000);
-      } else {
-        costPreview.textContent = `Cost: ${price}€`;
-        step3.classList.remove('hidden');
-        // costPreview.textContent = `Quota not available. Come back next month or email me.`;
-      }
-
-      //if(cost === 'free') {
-
-      //}
-    } catch (error) {
-      // if(error?.message?.toLowerCase().includes('quota')) {
-      //alert('Quota exceFeded. Come back later.'); // @TODO rmv
-      //costPreview.textContent = `Quota exceeded. Come back 01 may.` // @TODO rmv
-      //}
-      handleResError(error);
-    }
-  });
   const prepareInput = () => {
     const file = fileInput.files[fileInput.files.length - 1];
     console.log({
@@ -279,86 +421,24 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   const checkResError = async response => {
     if (!response.ok) {
-      // if 429 say to come back later
-      if (response.status === 429) {
-        const msg = 'Too many requests. Please try again next day.';
-        alert(msg);
-        throw new Error(msg);
-      }
-      let errorMessage = 'Api error';
+      let err;
       try {
-        const errorResponse = await response.json();
-        if (errorResponse && (errorResponse?.message || errorResponse?.error?.message)) {
-          errorMessage = errorResponse?.message || errorResponse?.error?.message;
-        }
-      } catch (error) {
-        handleResError(error);
+        err = await response.clone().json();
+      } catch (e) {
+        err = await response.text();
       }
-      throw new Error(errorMessage);
+      handleResError(err);
+      throw new Error(err);
     }
   };
   const handleResError = errObject => {
-    alert(errObject?.error?.message || errObject?.message || 'Error');
+    let msg = errObject?.error?.message || errObject?.message;
+    if (typeof errObject === 'string') {
+      msg = errObject;
+    }
+    alert(msg || 'Error');
     console.error('Res error:');
     console.error(errObject);
   };
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const token = urlParams.get('token');
-  console.log({
-    token
-  });
-  if (token) {
-    console.log('Payment done');
-    const getTranslationButton = document.getElementById('get-translation-btn');
-    const downloadButton = document.getElementById('download-button');
-    const loadingDownload = document.getElementById('loading-download');
-    document.getElementById('upload-container').classList.add('hidden');
-    document.getElementById('highlights').classList.add('hidden');
-    const step4 = document.getElementById('step4');
-    step4.classList.remove('hidden');
-    getTranslationButton.classList.remove('hidden');
-    console.log('set up click');
-    getTranslationButton.addEventListener('click', async () => {
-      console.log('clicked.');
-      step2.classList.add('hidden');
-      loading.classList.remove('hidden');
-      getTranslationButton.classList.add('hidden');
-      loadingDownload.classList.remove('hidden');
-      // clear input and hide step2
-      //fileInput.value = '';
-      //filenamePreview.textContent = '';
-      try {
-        const response = await fetch(`${host}/translate`, {
-          method: 'POST',
-          body: JSON.stringify({
-            token
-          }),
-          headers: {
-            'Content-Type': 'application/json' // Specify the content type
-          }
-        });
-        if (!response.ok && response.status === 401) {
-          const msg = `Token can be used only once.
-                     If you dont have the subtitles, contact therepo90@gmail.com`;
-          alert(msg);
-          throw new Error(msg);
-        }
-        await checkResError(response);
-        const fileId = await response.text();
-        console.log(fileId);
-        let downloadUrl = `${host}/file/${fileId}`;
-        // set url for downloadButton
-        downloadButton.href = downloadUrl;
-        document.getElementById('loadingSuccess').classList.remove('hidden');
-        loadingDownload.classList.add('hidden');
-      } catch (error) {
-        handleResError(error);
-      }
-      step2.classList.add('hidden');
-      loading.classList.add('hidden');
-    });
-  }
-  // call endpoint translate and pass token in body
 });
-},{}]},{},["imtx"], null)
+},{"./auth0":"hW48","./cfg":"mhI4"}]},{},["imtx"], null)
