@@ -148,8 +148,8 @@ const getAuth0Client = () => {
 };
 exports.getAuth0Client = getAuth0Client;
 const configureClient = async () => {
-  console.log('configureClient...');
   const config = _cfg.auth0Cfg;
+  console.log('configureClient...', window.auth0, config);
   auth0Client = await window.auth0.createAuth0Client(config);
   console.log('configured.');
 };

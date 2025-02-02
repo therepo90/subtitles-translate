@@ -7,8 +7,8 @@ export const getAuth0Client = () => {
 }
 
 export const configureClient = async () => {
-    console.log('configureClient...');
     const config = auth0Cfg;
+    console.log('configureClient...', window.auth0, config);
 
     auth0Client = await window.auth0.createAuth0Client(config);
     console.log('configured.');
