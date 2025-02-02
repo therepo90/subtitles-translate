@@ -135,14 +135,45 @@ const auth0Cfg = exports.auth0Cfg = {
     audience: 'https://translatesubtitles'
   }
 };
+},{}],"FOZT":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.handleResError = exports.checkResError = void 0;
+const checkResError = async response => {
+  if (!response.ok) {
+    let err;
+    try {
+      err = await response.clone().json();
+    } catch (e) {
+      err = await response.clone().text();
+    }
+    handleResError(err);
+    throw new Error(err);
+  }
+};
+exports.checkResError = checkResError;
+const handleResError = errObject => {
+  let msg = errObject?.error?.message || errObject?.message;
+  if (typeof errObject === 'string') {
+    msg = errObject;
+  }
+  alert(msg || 'Error');
+  console.error('Res error:');
+  console.error(errObject);
+};
+exports.handleResError = handleResError;
 },{}],"hW48":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateUI = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.configureClient = void 0;
+exports.updateUI = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
 var _cfg = require("./cfg");
+var _utils = require("./utils");
 let auth0Client = null;
 const getAuth0Client = () => {
   return auth0Client;
@@ -161,6 +192,23 @@ const configureClient = async () => {
   }
 };
 exports.configureClient = configureClient;
+const fetchMyUser = async () => {
+  const token = await auth0Client.getTokenSilently();
+  console.log({
+    token
+  });
+  const baseUrl = _cfg.apiUrl;
+  const response = await fetch(baseUrl + "/api/user", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  await (0, _utils.checkResError)(response);
+  const data = await response.json();
+  return data;
+};
+exports.fetchMyUser = fetchMyUser;
 const updateUI = async () => {
   const isAuthenticated = await auth0Client.isAuthenticated();
 
@@ -186,15 +234,7 @@ const updateUI = async () => {
             document.getElementById("ipt-user-profile").textContent = JSON.stringify(
                 await auth0Client.getUser()
             );*/
-    const token = await auth0Client.getTokenSilently();
-    const baseUrl = _cfg.apiUrl;
-    const response = await fetch(baseUrl + "/api/user", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    const data = await response.json();
+    const data = await fetchMyUser();
     //const data = {premium: false};
     const userPremium = data.premium;
     if (userPremium) {
@@ -253,11 +293,12 @@ const subscribe = async () => {
   window.location.href = data.url;
 };
 exports.subscribe = subscribe;
-},{"./cfg":"mhI4"}],"imtx":[function(require,module,exports) {
+},{"./cfg":"mhI4","./utils":"FOZT"}],"imtx":[function(require,module,exports) {
 "use strict";
 
 var _auth = require("./auth0");
 var _cfg = require("./cfg");
+var _utils = require("./utils");
 //const host = 'http://localhost:3000';
 
 var globals = {
@@ -343,7 +384,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           Authorization: `Bearer ${token}`
         }
       });
-      await checkResError(response);
+      await (0, _utils.checkResError)(response);
       const fileId = await response.text();
       console.log(fileId);
       let downloadUrl = `${_cfg.apiUrl}/file/${fileId}`;
@@ -352,7 +393,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       document.getElementById('loadingSuccess').classList.remove('hidden');
       loadingDownload.classList.add('hidden');
     } catch (error) {
-      handleResError(error);
+      (0, _utils.handleResError)(error);
     }
     step2.classList.add('hidden');
     loading.classList.add('hidden');
@@ -405,7 +446,18 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
   async function handleFiles(files) {
     const isAuthenticated = await (0, _auth.getAuth0Client)().isAuthenticated();
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
+      const user = await (0, _auth.fetchMyUser)();
+      console.log({
+        user
+      });
+      if (!user.premium) {
+        document.getElementById('pricing').scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+      return;
+    } else {
       // navigate smoothly to #pricing el
       document.getElementById('pricing').scrollIntoView({
         behavior: 'smooth'
@@ -437,6 +489,7 @@ const languageCodes = ["AR", "BG", "CS", "DA", "DE", "EL", "EN",
    "PT-PT",*/
 "RO", "RU", "SK", "SL", "SV", "TR", "UK", "ZH"];
 const prepareInput = () => {
+  const fileInput = document.getElementById('file');
   const file = fileInput.files[fileInput.files.length - 1];
   console.log({
     fileInput
@@ -448,25 +501,4 @@ const prepareInput = () => {
   formData.append('file', file);
   return formData;
 };
-const checkResError = async response => {
-  if (!response.ok) {
-    let err;
-    try {
-      err = await response.clone().json();
-    } catch (e) {
-      err = await response.text();
-    }
-    handleResError(err);
-    throw new Error(err);
-  }
-};
-const handleResError = errObject => {
-  let msg = errObject?.error?.message || errObject?.message;
-  if (typeof errObject === 'string') {
-    msg = errObject;
-  }
-  alert(msg || 'Error');
-  console.error('Res error:');
-  console.error(errObject);
-};
-},{"./auth0":"hW48","./cfg":"mhI4"}]},{},["imtx"], null)
+},{"./auth0":"hW48","./cfg":"mhI4","./utils":"FOZT"}]},{},["imtx"], null)

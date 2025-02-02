@@ -1,5 +1,6 @@
-import {configureClient, getAuth0Client, login, logout, subscribe, updateUI} from "./auth0";
+import {configureClient, fetchMyUser, getAuth0Client, login, logout, subscribe, updateUI} from "./auth0";
 import {apiUrl} from "./cfg";
+import {checkResError, handleResError} from "./utils";
 
 //const host = 'http://localhost:3000';
 
@@ -172,7 +173,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function handleFiles(files) {
 
         const isAuthenticated = await getAuth0Client().isAuthenticated();
-        if (!isAuthenticated) {
+
+        if (isAuthenticated) {
+                const user = await fetchMyUser();
+                console.log({user})
+                if(!user.premium){
+                    document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
+                }
+                return;
+        } else {
             // navigate smoothly to #pricing el
             document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
             return;
@@ -235,6 +244,7 @@ const languageCodes = [
     "ZH"
 ];
 const prepareInput = () => {
+    const fileInput = document.getElementById('file');
     const file = fileInput.files[fileInput.files.length - 1];
     console.log({fileInput})
     console.log({file})
@@ -242,26 +252,4 @@ const prepareInput = () => {
     formData.append('file', file);
     return formData;
 }
-const checkResError = async (response) => {
-    if (!response.ok) {
-        let err;
-        try{
-            err = await response.clone().json()
-        }
-        catch(e){
-            err = await response.text();
-        }
-        handleResError(err);
-        throw new Error(err);
-    }
-}
 
-const handleResError = (errObject) => {
-    let msg = errObject?.error?.message || errObject?.message;
-    if(typeof errObject  === 'string'){
-        msg = errObject;
-    }
-    alert(msg || 'Error');
-    console.error('Res error:');
-    console.error(errObject);
-}

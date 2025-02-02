@@ -1,4 +1,5 @@
 import {apiUrl, auth0Cfg} from "./cfg";
+import {checkResError} from "./utils";
 
 let auth0Client = null;
 
@@ -18,6 +19,21 @@ export const configureClient = async () => {
         alert('Error');
         throw err;
     }
+};
+
+export const fetchMyUser = async () => {
+    const token = await auth0Client.getTokenSilently();
+    console.log({token})
+    const baseUrl = apiUrl;
+    const response = await fetch(baseUrl + "/api/user", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    await checkResError(response);
+    const data = await response.json();
+    return data;
 };
 
 export const  updateUI = async () => {
@@ -46,15 +62,7 @@ export const  updateUI = async () => {
         document.getElementById("ipt-user-profile").textContent = JSON.stringify(
             await auth0Client.getUser()
         );*/
-        const token = await auth0Client.getTokenSilently();
-        const baseUrl = apiUrl;
-        const response = await fetch(baseUrl+"/api/user", {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        const data = await response.json();
+        const data = await fetchMyUser();
         //const data = {premium: false};
         const userPremium = data.premium;
         if(userPremium){
