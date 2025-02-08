@@ -124,7 +124,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.auth0Cfg = exports.apiUrl = void 0;
-const apiUrl = exports.apiUrl = "false" === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
+const apiUrl = exports.apiUrl = "false" === 'true' ? 'http://localhost:3007' : 'https://api.translatesubtitles.org';
 //export const baseUrl = process.env.LOCAL_DEV === 'true' ? 'http://localhost:3000' : 'https://api.translatesubtitles.org';
 const redirectUrl = "false" === 'true' ? 'http://localhost:1234' : 'https://translatesubtitles.org';
 const auth0Cfg = exports.auth0Cfg = {
@@ -334,7 +334,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   // NEW - check for the code and state parameters
   if (!isAuthenticated) {
     const query = window.location.search;
+    if (query.includes('error=') && query.includes("state=")) {
+      const error = decodeURIComponent(query.split('error_description=')[1].split('&')[0]);
+      console.error('Error: ', error);
+      alert(error);
+      return;
+    }
     if (query.includes("code=") && query.includes("state=")) {
+      // handle  http://localhost:1234/?error=access_denied&error_description=Email%20address%20not%20verified.%20Please%20verify%20your%20email%20before%20logging%20in.&state=QnhvMnJ2N3kyaU1RLjVnY3ExSUVmdFpkSGZYdWpFalFGTjdvQ0Y2Q2FrSg%3D%3D
+
       // Process the login state
       await (0, _auth.getAuth0Client)().handleRedirectCallback();
       await (0, _auth.updateUI)();
