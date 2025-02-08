@@ -44,7 +44,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     // NEW - check for the code and state parameters
     if (!isAuthenticated) {
         const query = window.location.search;
+        if(query.includes('error=') && query.includes("state=")){
+            const error = decodeURIComponent(query.split('error_description=')[1].split('&')[0]);
+            console.error('Error: ', error);
+            alert(error);
+            return;
+        }
         if (query.includes("code=") && query.includes("state=")) {
+
+            // handle  http://localhost:1234/?error=access_denied&error_description=Email%20address%20not%20verified.%20Please%20verify%20your%20email%20before%20logging%20in.&state=QnhvMnJ2N3kyaU1RLjVnY3ExSUVmdFpkSGZYdWpFalFGTjdvQ0Y2Q2FrSg%3D%3D
 
             // Process the login state
             await getAuth0Client().handleRedirectCallback();
