@@ -191,9 +191,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (isAuthenticated) {
                 const user = await fetchMyUser();
                 console.log({user})
-                if(!user.premium){
-                    document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
-                    return;
+                if(!user.premium) {
+                    if(!user.usagesLeft) {
+                        document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
+                        return;
+                    }
                 }
         } else {
             // navigate smoothly to #pricing el

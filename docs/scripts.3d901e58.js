@@ -464,10 +464,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         user
       });
       if (!user.premium) {
-        document.getElementById('pricing').scrollIntoView({
-          behavior: 'smooth'
-        });
-        return;
+        if (!user.usagesLeft) {
+          document.getElementById('pricing').scrollIntoView({
+            behavior: 'smooth'
+          });
+          return;
+        }
       }
     } else {
       // navigate smoothly to #pricing el
