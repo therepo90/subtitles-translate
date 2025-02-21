@@ -396,7 +396,10 @@ document.addEventListener("DOMContentLoaded", async function () {
           Authorization: `Bearer ${token}`
         }
       });
-      await (0, _utils.checkResError)(response);
+      await (0, _utils.checkResError)(response).catch(err => {
+        window.location.reload();
+        throw err;
+      });
       const fileId = await response.text();
       console.log(fileId);
       let downloadUrl = `${_cfg.apiUrl}/file/${fileId}`;
