@@ -40,49 +40,6 @@
         <a href="#" style="color:white;text-decoration: underline;" class="logged-in subbed" id="manage">Account</a>
         <a href="#" style="color:white;text-decoration: underline;" class="logged-in" id="logout-btn">Log out</a>
 
-        <div class="modal" style="color:black;">
-            <input id="modal_manage" type="checkbox">
-            <label for="modal_manage" class="overlay"></label>
-            <article>
-                <header>
-                    <h3>Manage account</h3>
-                    <label for="modal_manage" class="close">&times;</label>
-                </header>
-                <section class="content">
-                    <div>
-                        Your coins: <span id="coins">?</span>
-                    </div>
-                    <div>
-                        <button class="button" id="unsub-btn">Cancel subscription</button>
-                    </div>
-                </section>
-                <footer>
-                    <label for="modal_manage" class="button dangerous">
-                        Close
-                    </label>
-                </footer>
-            </article>
-        </div>
-
-        <div class="modal" style="color:black;">
-            <input id="modal_unsub" type="checkbox">
-            <label for="modal_unsub" class="overlay"></label>
-            <article>
-                <header>
-                    <h3>Cancel Subscription</h3>
-                    <label for="modal_unsub" class="close">&times;</label>
-                </header>
-                <section class="content">
-                    Are you sure you want to cancel your subscription?
-                </section>
-                <footer>
-                    <a class="button" href="#" id="unsub-yes">Yes</a>
-                    <label for="modal_unsub" class="button dangerous">
-                        Cancel
-                    </label>
-                </footer>
-            </article>
-        </div>
 
     </div>
     <h1>Translate subtitles for free (AI Powered)</h1>
@@ -416,5 +373,49 @@
         <pre id="ipt-user-profile"></pre>
     </label>-->
 </div>
+<div class="modal" style="color:black;">
+    <input id="modal_manage" type="checkbox">
+    <label for="modal_manage" class="overlay"></label>
+    <article>
+        <header>
+            <h3>Manage account</h3>
+            <label for="modal_manage" class="close">&times;</label>
+        </header>
+        <section class="content">
+            <div>
+                Your coins: <span id="coins">?</span>
+            </div>
+            <div>
+                <button class="button" id="unsub-btn">Cancel subscription</button>
+            </div>
+        </section>
+        <footer>
+            <label for="modal_manage" class="button dangerous">
+                Close
+            </label>
+        </footer>
+    </article>
+</div>
+
+<div class="modal" style="color:black;">
+    <input id="modal_unsub" type="checkbox">
+    <label for="modal_unsub" class="overlay"></label>
+    <article>
+        <header>
+            <h3>Cancel Subscription</h3>
+            <label for="modal_unsub" class="close">&times;</label>
+        </header>
+        <section class="content">
+            Are you sure you want to cancel your subscription?
+        </section>
+        <footer>
+            <a class="button" href="#" id="unsub-yes">Yes</a>
+            <label for="modal_unsub" class="button dangerous">
+                Cancel
+            </label>
+        </footer>
+    </article>
+</div>
+
 </body>
 </html>
