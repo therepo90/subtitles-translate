@@ -347,7 +347,7 @@ const setHandlers = async () => {
   document.getElementById('unsub-yes').addEventListener('click', async () => {
     (0, _auth.unsubscribe)().then(() => {
       alert('done');
-      document.getElementById('modal_1').checked = false; // close modal
+      window.location.reload();
     });
   });
 };
