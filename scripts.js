@@ -1,4 +1,4 @@
-import {configureClient, fetchMyUser, getAuth0Client, login, logout, subscribe, updateUI} from "./auth0";
+import {configureClient, fetchMyUser, getAuth0Client, login, logout, subscribe, unsubscribe, updateUI} from "./auth0";
 import {apiUrl} from "./cfg";
 import {checkResError, handleResError} from "./utils";
 
@@ -21,6 +21,23 @@ const setHandlers = async () => {
     });
     document.getElementById('pricing-sub').addEventListener('click', async () => {
         subscribe();
+    });
+    document.getElementById('manage').addEventListener('click', async () => {
+        document.getElementById('modal_manage').checked = true; // open modal
+        const user = await fetchMyUser();
+        const coins = user.usagesLeft;
+        document.getElementById('coins').textContent = coins;
+        //document.getElementById('modal_1').checked = false; // close modal
+    });
+    document.getElementById('unsub-btn').addEventListener('click', async () => {
+        document.getElementById('modal_unsub').checked = true; // open modal
+        //document.getElementById('modal_1').checked = false; // close modal
+    });
+    document.getElementById('unsub-yes').addEventListener('click', async () => {
+        unsubscribe().then(() => {
+            alert('done');
+            document.getElementById('modal_1').checked = false; // close modal
+        });
     });
 };
 

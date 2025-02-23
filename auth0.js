@@ -1,5 +1,5 @@
 import {apiUrl, auth0Cfg} from "./cfg";
-import {checkResError} from "./utils";
+import {checkResError, handleResError} from "./utils";
 
 let auth0Client = null;
 
@@ -102,6 +102,23 @@ export const logout = () => {
     });
 };
 
+export const unsubscribe = async () => {
+    const token = await auth0Client.getTokenSilently();
+    console.log(token);
+    const baseUrl = apiUrl;
+    const response = await fetch(baseUrl+"/api/stripe/cancel-sub", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+        await checkResError(response).catch(e => {
+            alert('Something gone wrong. Please contact RepoGamesStudio@gmail.com');
+            throw new Error('Something gone wrong. Please contact RepoGamesStudio@gmail.com');
+        });
+
+};
 export const subscribe = async () => {
     console.log('subscribe');
     const isAuthenticated = await auth0Client.isAuthenticated();

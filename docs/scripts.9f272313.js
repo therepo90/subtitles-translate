@@ -171,7 +171,7 @@ exports.handleResError = handleResError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateUI = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
+exports.updateUI = exports.unsubscribe = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
 var _cfg = require("./cfg");
 var _utils = require("./utils");
 let auth0Client = null;
@@ -271,6 +271,22 @@ const logout = () => {
   });
 };
 exports.logout = logout;
+const unsubscribe = async () => {
+  const token = await auth0Client.getTokenSilently();
+  console.log(token);
+  const baseUrl = _cfg.apiUrl;
+  const response = await fetch(baseUrl + "/api/stripe/cancel-sub", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  await (0, _utils.checkResError)(response).catch(e => {
+    alert('Something gone wrong. Please contact RepoGamesStudio@gmail.com');
+    throw new Error('Something gone wrong. Please contact RepoGamesStudio@gmail.com');
+  });
+};
+exports.unsubscribe = unsubscribe;
 const subscribe = async () => {
   console.log('subscribe');
   const isAuthenticated = await auth0Client.isAuthenticated();
@@ -316,6 +332,23 @@ const setHandlers = async () => {
   });
   document.getElementById('pricing-sub').addEventListener('click', async () => {
     (0, _auth.subscribe)();
+  });
+  document.getElementById('manage').addEventListener('click', async () => {
+    document.getElementById('modal_manage').checked = true; // open modal
+    const user = await (0, _auth.fetchMyUser)();
+    const coins = user.usagesLeft;
+    document.getElementById('coins').textContent = coins;
+    //document.getElementById('modal_1').checked = false; // close modal
+  });
+  document.getElementById('unsub-btn').addEventListener('click', async () => {
+    document.getElementById('modal_unsub').checked = true; // open modal
+    //document.getElementById('modal_1').checked = false; // close modal
+  });
+  document.getElementById('unsub-yes').addEventListener('click', async () => {
+    (0, _auth.unsubscribe)().then(() => {
+      alert('done');
+      document.getElementById('modal_1').checked = false; // close modal
+    });
   });
 };
 document.addEventListener("DOMContentLoaded", async function () {
