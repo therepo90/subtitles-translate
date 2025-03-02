@@ -179,7 +179,7 @@ exports.handleResError = handleResError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateUI = exports.unsubscribe = exports.subscribe = exports.logout = exports.login = exports.getSub = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
+exports.updateUI = exports.unsubscribe = exports.subscribe = exports.logout = exports.login = exports.getSub = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = exports.buyCoins = void 0;
 var _cfg = require("./cfg");
 var _utils = require("./utils");
 let auth0Client = null;
@@ -294,6 +294,23 @@ const getSub = async () => {
   return data;
 };
 exports.getSub = getSub;
+const buyCoins = async () => {
+  const token = await auth0Client.getTokenSilently();
+  console.log(token);
+  const baseUrl = _cfg.apiUrl;
+  const response = await fetch(baseUrl + "/api/stripe/checkout-coins", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  const data = await response.json();
+  console.log(data);
+  console.log('rdr');
+  window.location.href = data.url;
+};
+exports.buyCoins = buyCoins;
 const unsubscribe = async () => {
   const token = await auth0Client.getTokenSilently();
   console.log(token);
@@ -383,6 +400,9 @@ const setHandlers = async () => {
   document.getElementById('unsub-btn').addEventListener('click', async () => {
     document.getElementById('modal_unsub').checked = true; // open modal
     //document.getElementById('modal_1').checked = false; // close modal
+  });
+  document.getElementById('buy-coins-btn').addEventListener('click', async () => {
+    (0, _auth.buyCoins)();
   });
   document.getElementById('unsub-yes').addEventListener('click', async () => {
     (0, _auth.unsubscribe)().then(() => {

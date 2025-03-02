@@ -117,6 +117,24 @@ export const getSub = async () => {
     console.log(data);
     return data;
 }
+
+export const buyCoins = async () => {
+    const token = await auth0Client.getTokenSilently();
+    console.log(token);
+    const baseUrl = apiUrl;
+    const response = await fetch(baseUrl+"/api/stripe/checkout-coins", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+    });
+
+    const data = await response.json();
+    console.log(data);
+    console.log('rdr');
+    window.location.href = data.url;
+}
 export const unsubscribe = async () => {
     const token = await auth0Client.getTokenSilently();
     console.log(token);

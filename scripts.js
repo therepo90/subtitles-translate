@@ -1,4 +1,5 @@
 import {
+    buyCoins,
     configureClient,
     fetchMyUser,
     getAuth0Client,
@@ -61,6 +62,9 @@ const setHandlers = async () => {
     document.getElementById('unsub-btn').addEventListener('click', async () => {
         document.getElementById('modal_unsub').checked = true; // open modal
         //document.getElementById('modal_1').checked = false; // close modal
+    });
+    document.getElementById('buy-coins-btn').addEventListener('click', async () => {
+        buyCoins();
     });
     document.getElementById('unsub-yes').addEventListener('click', async () => {
         unsubscribe().then(() => {
