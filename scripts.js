@@ -45,8 +45,8 @@ const setHandlers = async () => {
         const sub = await getSub();
         document.getElementById('coins').textContent = coins;
         if (sub) {
-            document.getElementById('curr-period-end').textContent = new Date(sub.currentPeriodEnd).split('T')[0];
-            document.getElementById('next-payment').textContent = new Date(sub.nextPaymentDate).split('T')[0]
+            document.getElementById('curr-period-end').textContent = new Date(sub.currentPeriodEnd).toISOString().split('T')[0];
+            document.getElementById('next-payment').textContent = new Date(sub.nextPaymentDate).toISOString().split('T')[0]
             document.getElementById('amount').textContent = sub.amountDue + sub.currency;
         }
     });
