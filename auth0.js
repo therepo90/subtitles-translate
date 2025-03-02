@@ -1,5 +1,5 @@
 import {apiUrl, auth0Cfg} from "./cfg";
-import {checkResError, handleResError} from "./utils";
+import {checkResError, getNullableJson, handleResError} from "./utils";
 
 let auth0Client = null;
 
@@ -102,6 +102,21 @@ export const logout = () => {
     });
 };
 
+export const getSub = async () => {
+    const token = await auth0Client.getTokenSilently();
+    console.log(token);
+    const baseUrl = apiUrl;
+    const response = await fetch(baseUrl+"/api/stripe/mysub", {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    const data = await getNullableJson(response);
+    console.log(data);
+    return data;
+}
 export const unsubscribe = async () => {
     const token = await auth0Client.getTokenSilently();
     console.log(token);

@@ -1,3 +1,11 @@
+export const getNullableJson = async (response) => {
+    try {
+        return await response.json();
+    }
+    catch (e) {
+        return null;
+    }
+}
 export const checkResError = async (response) => {
     if (!response.ok) {
         let err;

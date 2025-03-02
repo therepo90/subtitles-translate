@@ -1,4 +1,14 @@
-import {configureClient, fetchMyUser, getAuth0Client, login, logout, subscribe, unsubscribe, updateUI} from "./auth0";
+import {
+    configureClient,
+    fetchMyUser,
+    getAuth0Client,
+    getSub,
+    login,
+    logout,
+    subscribe,
+    unsubscribe,
+    updateUI
+} from "./auth0";
 import {apiUrl} from "./cfg";
 import {checkResError, handleResError} from "./utils";
 
@@ -9,6 +19,9 @@ var globals = {
 };
 
 
+const openSubscribeModal = async () => {
+    document.getElementById('modal_subscribe').checked = true; // open modal
+}
 const setHandlers = async () => {
     document.getElementById('login-btn').addEventListener('click', async () => {
         login();
@@ -20,14 +33,21 @@ const setHandlers = async () => {
         login();
     });
     document.getElementById('pricing-sub').addEventListener('click', async () => {
-        subscribe();
+        openSubscribeModal();
     });
+
     document.getElementById('manage').addEventListener('click', async () => {
         document.getElementById('modal_manage').checked = true; // open modal
         const user = await fetchMyUser();
         const coins = user.usagesLeft;
         document.getElementById('coins').textContent = coins;
-        //document.getElementById('modal_1').checked = false; // close modal
+        const sub = await getSub();
+        document.getElementById('coins').textContent = coins;
+        if (sub) {
+            document.getElementById('curr-period-end').textContent = new Date(sub.currentPeriodEnd*1000).toLocaleString();
+            document.getElementById('next-payment').textContent = new Date(sub.nextPaymentDate * 1000).toLocaleString();
+            document.getElementById('amount').textContent = sub.amountDue + sub.currency;
+        }
     });
     document.getElementById('unsub-btn').addEventListener('click', async () => {
         document.getElementById('modal_unsub').checked = true; // open modal

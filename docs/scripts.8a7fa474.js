@@ -141,7 +141,15 @@ const auth0Cfg = exports.auth0Cfg = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.handleResError = exports.checkResError = void 0;
+exports.handleResError = exports.getNullableJson = exports.checkResError = void 0;
+const getNullableJson = async response => {
+  try {
+    return await response.json();
+  } catch (e) {
+    return null;
+  }
+};
+exports.getNullableJson = getNullableJson;
 const checkResError = async response => {
   if (!response.ok) {
     let err;
@@ -171,7 +179,7 @@ exports.handleResError = handleResError;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateUI = exports.unsubscribe = exports.subscribe = exports.logout = exports.login = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
+exports.updateUI = exports.unsubscribe = exports.subscribe = exports.logout = exports.login = exports.getSub = exports.getAuth0Client = exports.fetchMyUser = exports.configureClient = void 0;
 var _cfg = require("./cfg");
 var _utils = require("./utils");
 let auth0Client = null;
@@ -271,6 +279,21 @@ const logout = () => {
   });
 };
 exports.logout = logout;
+const getSub = async () => {
+  const token = await auth0Client.getTokenSilently();
+  console.log(token);
+  const baseUrl = _cfg.apiUrl;
+  const response = await fetch(baseUrl + "/api/stripe/mysub", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  const data = await (0, _utils.getNullableJson)(response);
+  console.log(data);
+  return data;
+};
+exports.getSub = getSub;
 const unsubscribe = async () => {
   const token = await auth0Client.getTokenSilently();
   console.log(token);
@@ -320,6 +343,9 @@ var _utils = require("./utils");
 var globals = {
   paymentUrl: undefined
 };
+const openSubscribeModal = async () => {
+  document.getElementById('modal_subscribe').checked = true; // open modal
+};
 const setHandlers = async () => {
   document.getElementById('login-btn').addEventListener('click', async () => {
     (0, _auth.login)();
@@ -331,14 +357,20 @@ const setHandlers = async () => {
     (0, _auth.login)();
   });
   document.getElementById('pricing-sub').addEventListener('click', async () => {
-    (0, _auth.subscribe)();
+    openSubscribeModal();
   });
   document.getElementById('manage').addEventListener('click', async () => {
     document.getElementById('modal_manage').checked = true; // open modal
     const user = await (0, _auth.fetchMyUser)();
     const coins = user.usagesLeft;
     document.getElementById('coins').textContent = coins;
-    //document.getElementById('modal_1').checked = false; // close modal
+    const sub = await (0, _auth.getSub)();
+    document.getElementById('coins').textContent = coins;
+    if (sub) {
+      document.getElementById('curr-period-end').textContent = new Date(sub.currentPeriodEnd * 1000).toLocaleString();
+      document.getElementById('next-payment').textContent = new Date(sub.nextPaymentDate * 1000).toLocaleString();
+      document.getElementById('amount').textContent = sub.amountDue + sub.currency;
+    }
   });
   document.getElementById('unsub-btn').addEventListener('click', async () => {
     document.getElementById('modal_unsub').checked = true; // open modal
