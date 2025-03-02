@@ -344,7 +344,8 @@ var globals = {
   paymentUrl: undefined
 };
 const openSubscribeModal = async () => {
-  document.getElementById('modal_subscribe').checked = true; // open modal
+  (0, _auth.subscribe)();
+  //document.getElementById('modal_subscribe').checked = true; // open modal
 };
 const setHandlers = async () => {
   document.getElementById('login-btn').addEventListener('click', async () => {

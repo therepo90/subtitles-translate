@@ -20,7 +20,8 @@ var globals = {
 
 
 const openSubscribeModal = async () => {
-    document.getElementById('modal_subscribe').checked = true; // open modal
+    subscribe();
+    //document.getElementById('modal_subscribe').checked = true; // open modal
 }
 const setHandlers = async () => {
     document.getElementById('login-btn').addEventListener('click', async () => {
