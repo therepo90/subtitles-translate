@@ -32,6 +32,7 @@
 
     <link rel="stylesheet" href="./styles.less">
     <link rel="stylesheet" href="./pricing/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
     <script src="./scripts.js" defer></script>
 </head>
@@ -72,13 +73,14 @@
     </div>-->
     <div class="container" id="upload-container">
         <div class="items-center vh-100">
-            <form class="flex flex-column dropzone" enctype="multipart/form-data">
+            <form class="flex flex-column dropzone" enctype="multipart/form-data" id="dropzone">
                 <label for="file" class="the-label">
                     <span class="upload-text" id="upload-text"><button type="button" class="btn btn-primary" id="sub-btn">Upload or drop in subtitles</button></span>
-                    <span id="filename-preview" class="hidden"></span>
                 </label>
-                <input type="file" name="file" id="file" class="hidden" accept=".srt">
+                <input type="file" name="files[]" id="file" class="hidden" accept=".srt" multiple>
             </form>
+
+            <div id="filename-previews" class="hidden"></div>
             <div style="text-align: center;width: 100%;" id="step2" class="hidden">
                 <h2 style="color:black; text-align: center;">
                     <p>Supported language codes:</p>
@@ -92,7 +94,19 @@
             </div>
             <div id="loading" class="hidden">Loading...</div>
         </div>
-
+        <script id="files-template" type="text/x-handlebars-template">
+            <div class="flex flex-column">
+                <ul class="list-group">
+                    {{#each files}}
+                    <li class="class preview-group">
+                        <span class="">{{this.name}}</span>
+                        <div class="hidden" id="loading-{{@index}}">Loading...</div>
+                        <button class="btn btn-primary hidden" data-index="{{@index}}">Download</button>
+                    </li>
+                    {{/each}}
+                </ul>
+            </div>
+        </script>
 
     </div>
     <div class="container hidden" id="step4" style="text-align: center">

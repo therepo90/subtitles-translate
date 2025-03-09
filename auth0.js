@@ -139,6 +139,7 @@ export const unsubscribe = async () => {
     const token = await auth0Client.getTokenSilently();
     console.log(token);
     const baseUrl = apiUrl;
+
     const response = await fetch(baseUrl+"/api/stripe/cancel-sub", {
         method: "POST",
         headers: {

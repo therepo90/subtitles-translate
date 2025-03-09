@@ -115,14 +115,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    const dropzone = document.querySelector('.dropzone');
+
     const fileInput = document.getElementById('file');
     const filenamePreview = document.getElementById('filename-preview');
     const uploadText = document.getElementById('upload-text');
+    const dropzoneContainer = document.getElementById('dropzone');
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
     const loading = document.getElementById('loading');
-
 
     const getTranslationButton = document.getElementById('get-translation-btn');
     getTranslationButton.addEventListener('click', async () => {
@@ -145,8 +145,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         //fileInput.value = '';
         //filenamePreview.textContent = '';
         try {
-
-            const formData = prepareInput();
+            const formData = prepareInput(fileInput.files.length - 1);
             const targetLanguageInput = document.getElementById('target-language');
             const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
             // Sprawdź, czy pole target-language nie jest puste
@@ -183,7 +182,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     });
 
-
+    const dropzone = document.querySelector('.dropzone');
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropzone.classList.add('drag-over');
@@ -196,14 +195,22 @@ document.addEventListener("DOMContentLoaded", async function () {
     dropzone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropzone.classList.remove('drag-over');
+
         const files = e.dataTransfer.files;
-        const file = files[0];
-        if (file && file.size > 350 * 1024) {
-            alert('File too big. Max is 350KB.');
-            this.value = '';
-            throw new Error('File too big. Max is 350KB.');
+        let fileTooBig = false;
+
+        for (const file of files) {
+            if (file.size > 350 * 1024) {
+                alert(`File ${file.name} is too big. Max is 350KB.`);
+                fileTooBig = true;
+            }
         }
-        fileInput.files = e.dataTransfer.files;
+
+        if (fileTooBig) {
+            return; // Przerywa, jeśli którykolwiek plik jest za duży
+        }
+
+        fileInput.files = files;
         handleFiles(files);
     });
 
@@ -218,12 +225,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     function validateFile(file) {
-
-        if (!file) {
-            alert("Please select a file.");
-            throw new Error('No file selected.');
-        }
-
         const allowedExtensions = ['srt']; // Add more extensions as needed
         const fileName = file.name;
         const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -246,8 +247,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log({user})
                 if(!user.premium) {
                     if(!user.usagesLeft) {
+                        alert('You have no usages left. Subscribe or buy more coins.');
                         document.getElementById('pricing').scrollIntoView({behavior: 'smooth'});
                         return;
+                    }
+                    if (files.length !== 1) {
+                        alert('Only one file allowed in free version.');
+                        throw new Error('Only one file allowed in free version.');
                     }
                 }
         } else {
@@ -256,18 +262,31 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
-        if (files.length !== 1) {
-            alert('Only one file allowed.');
-            throw new Error('Only one file allowed.');
+
+        if (!files[0]) {
+            alert("Please select a file.");
+            throw new Error('No file selected.');
         }
-        validateFile(files[0]);
+        for (const f of files) {
+            validateFile(f);
+        }
         console.log({files})
         if (!files || files.length === 0) return;
-        const file = files[0];
+        //const file = files[0];
 
-        filenamePreview.textContent = file.name;
+        //filenamePreview.textContent = file.name;
+        /*compile handlebars with files and put to filename-previews*/
+        const filenamePreview = document.getElementById('filename-previews');
+        filenamePreview.innerHTML = '';
+        const templateSource = document.getElementById('files-template').innerHTML;
+        const template = window.Handlebars.compile(templateSource);
+        let tplObj = {files: [].slice.call(files).map((f, i) => ({name: f.name, index: i}))};
+        console.log({tplObj})
+        const html = template(tplObj);
+        filenamePreview.innerHTML = html;
         filenamePreview.classList.remove('hidden');
-        uploadText.classList.add('hidden');
+        //uploadText.classList.add('hidden');
+        dropzoneContainer.classList.add('hidden');
         step2.classList.remove('hidden');
     }
 
@@ -312,9 +331,9 @@ const languageCodes = [
     "UK",
     "ZH"
 ];
-const prepareInput = () => {
+const prepareInput = (i) => {
     const fileInput = document.getElementById('file');
-    const file = fileInput.files[fileInput.files.length - 1];
+    const file = fileInput.files[i];
     console.log({fileInput})
     console.log({file})
     const formData = new FormData();
