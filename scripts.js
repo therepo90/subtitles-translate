@@ -74,6 +74,48 @@ const setHandlers = async () => {
     });
 };
 
+function getTargetLang() {
+    const targetLanguageInput = document.getElementById('target-language');
+    const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+    return targetLanguage;
+}
+
+async function startTranslateFiles(fileInput, targetLanguage) {
+    const files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+        const downloadButton = document.getElementById('download-btn'+i);
+        const loadingDownload = document.getElementById('loading-'+i);
+        await translateFile(fileInput, targetLanguage,i, downloadButton, loadingDownload).catch(err => {
+            console.error(err);
+            //alert('Error translating file ' + files[i].name);
+            // todo dom el
+        });
+    }
+
+}
+async function translateFile(fileInput, targetLanguage,i, downloadButton, loadingDownload) {
+    const formData = prepareInput(fileInput.files[i]);
+    formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
+
+    loadingDownload.classList.remove('hidden');
+    const token = await getAuth0Client().getTokenSilently();
+    const response = await fetch(`${apiUrl}/api/translate`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+    });
+    await checkResError(response, false);
+    const fileId = await response.text();
+    console.log(fileId);
+    let downloadUrl = `${apiUrl}/file/${fileId}`;
+    // set url for downloadButton
+    downloadButton.href = downloadUrl;
+    //document.getElementById('loadingSuccess').classList.remove('hidden');
+    loadingDownload.classList.add('hidden');
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     console.log('DOMContentLoaded init...');
 
@@ -145,40 +187,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         //fileInput.value = '';
         //filenamePreview.textContent = '';
         try {
-            const formData = prepareInput(fileInput.files.length - 1);
-            const targetLanguageInput = document.getElementById('target-language');
-            const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
-            // Sprawdź, czy pole target-language nie jest puste
-            if (!targetLanguage || targetLanguage.length !=2) {
+            const targetLanguage = getTargetLang();
+            if (targetLanguage && targetLanguage.length === 2) {
+                await startTranslateFiles(fileInput, targetLanguage);
+                step2.classList.add('hidden');
+                loading.classList.add('hidden');
+            } else {
                 alert('Please enter the target 2-letter language code. ');
-                return;
             }
-            formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
-
-            const token = await getAuth0Client().getTokenSilently();
-            const response = await fetch(`${apiUrl}/api/translate`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            });
-            await checkResError(response).catch(err =>{
-                window.location.reload();
-                throw err;
-            });
-            const fileId = await response.text();
-            console.log(fileId);
-            let downloadUrl = `${apiUrl}/file/${fileId}`;
-            // set url for downloadButton
-            downloadButton.href = downloadUrl;
-            document.getElementById('loadingSuccess').classList.remove('hidden');
-            loadingDownload.classList.add('hidden');
         } catch (error) {
             handleResError(error);
         }
-        step2.classList.add('hidden');
-        loading.classList.add('hidden');
 
     });
 
