@@ -291,6 +291,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             alert("Please select a file.");
             throw new Error('No file selected.');
         }
+        if (files.length >20 ) {
+            alert('Max files 20 at once.');
+            throw new Error('Max files 20 at once.');
+        }
         for (const f of files) {
             validateFile(f);
         }
