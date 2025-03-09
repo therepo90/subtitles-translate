@@ -150,7 +150,7 @@ const getNullableJson = async response => {
   }
 };
 exports.getNullableJson = getNullableJson;
-const checkResError = async response => {
+const checkResError = async (response, doAlert = true) => {
   if (!response.ok) {
     let err;
     try {
@@ -158,17 +158,17 @@ const checkResError = async response => {
     } catch (e) {
       err = await response.clone().text();
     }
-    handleResError(err);
+    handleResError(err, doAlert);
     throw new Error(err);
   }
 };
 exports.checkResError = checkResError;
-const handleResError = errObject => {
+const handleResError = (errObject, doAlert) => {
   let msg = errObject?.error?.message || errObject?.message;
   if (typeof errObject === 'string') {
     msg = errObject;
   }
-  alert(msg || 'Error');
+  doAlert && alert(msg || 'Error');
   console.error('Res error:');
   console.error(errObject);
 };
@@ -411,6 +411,53 @@ const setHandlers = async () => {
     });
   });
 };
+function getTargetLang() {
+  const targetLanguageInput = document.getElementById('target-language');
+  const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
+  return targetLanguage;
+}
+async function startTranslateFiles(fileInput, targetLanguage) {
+  const files = fileInput.files;
+  for (let i = 0; i < files.length; i++) {
+    const downloadButton = document.getElementById('download-btn-' + i);
+    const loadingDownload = document.getElementById('loading-' + i);
+    const error = document.getElementById('error-' + i);
+    loadingDownload.classList.remove('hidden');
+    await translateFile(fileInput, targetLanguage, i).then(dlUrl => {
+      downloadButton.classList.remove('hidden');
+      downloadButton.href = dlUrl;
+    }).catch(err => {
+      console.error(err);
+      error.classList.remove('hidden');
+      error.innerText = `Error: ${err.message}`;
+      //alert('Error translating file ' + files[i].name);
+      // todo dom el
+    }).finally(() => {
+      loadingDownload.classList.add('hidden');
+    });
+  }
+}
+async function translateFile(fileInput, targetLanguage, i) {
+  const formData = prepareInput(fileInput.files[i]);
+  formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
+
+  const token = await (0, _auth.getAuth0Client)().getTokenSilently();
+  const response = await fetch(`${_cfg.apiUrl}/api/translate`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  await (0, _utils.checkResError)(response, false); // moze false, bo errory z api nie widac
+  const fileId = await response.text();
+  console.log(fileId);
+  let downloadUrl = `${_cfg.apiUrl}/file/${fileId}`;
+  // set url for downloadButton
+  return downloadUrl;
+  //document.getElementById('loadingSuccess').classList.remove('hidden');
+  //loadingDownload.classList.add('hidden');
+}
 document.addEventListener("DOMContentLoaded", async function () {
   console.log('DOMContentLoaded init...');
   document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));
@@ -445,67 +492,43 @@ document.addEventListener("DOMContentLoaded", async function () {
       window.history.replaceState({}, document.title, "/");
     }
   }
-  const dropzone = document.querySelector('.dropzone');
   const fileInput = document.getElementById('file');
   const filenamePreview = document.getElementById('filename-preview');
   const uploadText = document.getElementById('upload-text');
+  const dropzoneContainer = document.getElementById('dropzone');
   const step2 = document.getElementById('step2');
   const step3 = document.getElementById('step3');
-  const loading = document.getElementById('loading');
+  //const loading = document.getElementById('loading');
+
   const getTranslationButton = document.getElementById('get-translation-btn');
   getTranslationButton.addEventListener('click', async () => {
     console.log('clicked.');
-    const downloadButton = document.getElementById('download-button');
-    const loadingDownload = document.getElementById('loading-download');
-    document.getElementById('upload-container').classList.add('hidden');
-    document.getElementById('highlights').classList.add('hidden');
-    const step4 = document.getElementById('step4');
-    step4.classList.remove('hidden');
-    getTranslationButton.classList.remove('hidden');
-    console.log('set up click');
-    step2.classList.add('hidden');
-    loading.classList.remove('hidden');
-    getTranslationButton.classList.add('hidden');
-    loadingDownload.classList.remove('hidden');
+
+    //document.getElementById('upload-container').classList.add('hidden');
+    //document.getElementById('highlights').classList.add('hidden');
+    //getTranslationButton.classList.remove('hidden');
+    //console.log('set up click');
+
     // clear input and hide step2
     //fileInput.value = '';
     //filenamePreview.textContent = '';
     try {
-      const formData = prepareInput();
-      const targetLanguageInput = document.getElementById('target-language');
-      const targetLanguage = targetLanguageInput.value; // Pobierz wartość z pola target-language
-      // Sprawdź, czy pole target-language nie jest puste
-      if (!targetLanguage || targetLanguage.length != 2) {
+      const targetLanguage = getTargetLang();
+      if (targetLanguage && targetLanguage.length === 2) {
+        step2.classList.add('hidden');
+        //loading.classList.remove('hidden');
+        getTranslationButton.classList.add('hidden');
+        await startTranslateFiles(fileInput, targetLanguage);
+        //step2.classList.add('hidden');
+        //loading.classList.add('hidden');
+      } else {
         alert('Please enter the target 2-letter language code. ');
-        return;
       }
-      formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
-
-      const token = await (0, _auth.getAuth0Client)().getTokenSilently();
-      const response = await fetch(`${_cfg.apiUrl}/api/translate`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      await (0, _utils.checkResError)(response).catch(err => {
-        window.location.reload();
-        throw err;
-      });
-      const fileId = await response.text();
-      console.log(fileId);
-      let downloadUrl = `${_cfg.apiUrl}/file/${fileId}`;
-      // set url for downloadButton
-      downloadButton.href = downloadUrl;
-      document.getElementById('loadingSuccess').classList.remove('hidden');
-      loadingDownload.classList.add('hidden');
     } catch (error) {
       (0, _utils.handleResError)(error);
     }
-    step2.classList.add('hidden');
-    loading.classList.add('hidden');
   });
+  const dropzone = document.querySelector('.dropzone');
   dropzone.addEventListener('dragover', e => {
     e.preventDefault();
     dropzone.classList.add('drag-over');
@@ -517,13 +540,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     e.preventDefault();
     dropzone.classList.remove('drag-over');
     const files = e.dataTransfer.files;
-    const file = files[0];
-    if (file && file.size > 350 * 1024) {
-      alert('File too big. Max is 350KB.');
-      this.value = '';
-      throw new Error('File too big. Max is 350KB.');
+    let fileTooBig = false;
+    for (const file of files) {
+      if (file.size > 350 * 1024) {
+        alert(`File ${file.name} is too big. Max is 350KB.`);
+        fileTooBig = true;
+      }
     }
-    fileInput.files = e.dataTransfer.files;
+    if (fileTooBig) {
+      return; // Przerywa, jeśli którykolwiek plik jest za duży
+    }
+    fileInput.files = files;
     handleFiles(files);
   });
   fileInput.addEventListener('change', e => {
@@ -537,10 +564,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     handleFiles(files);
   });
   function validateFile(file) {
-    if (!file) {
-      alert("Please select a file.");
-      throw new Error('No file selected.');
-    }
     const allowedExtensions = ['srt']; // Add more extensions as needed
     const fileName = file.name;
     const fileExtension = fileName.split('.').pop().toLowerCase();
@@ -561,10 +584,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
       if (!user.premium) {
         if (!user.usagesLeft) {
+          alert('You have no usages left. Subscribe or buy more coins.');
           document.getElementById('pricing').scrollIntoView({
             behavior: 'smooth'
           });
           return;
+        }
+        if (files.length !== 1) {
+          alert('Only one file allowed in free version.');
+          throw new Error('Only one file allowed in free version.');
         }
       }
     } else {
@@ -574,19 +602,43 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
       return;
     }
-    if (files.length !== 1) {
-      alert('Only one file allowed.');
-      throw new Error('Only one file allowed.');
+    if (!files[0]) {
+      alert("Please select a file.");
+      throw new Error('No file selected.');
     }
-    validateFile(files[0]);
+    if (files.length > 20) {
+      alert('Max files 20 at once.');
+      throw new Error('Max files 20 at once.');
+    }
+    for (const f of files) {
+      validateFile(f);
+    }
     console.log({
       files
     });
     if (!files || files.length === 0) return;
-    const file = files[0];
-    filenamePreview.textContent = file.name;
+    //const file = files[0];
+
+    //filenamePreview.textContent = file.name;
+    /*compile handlebars with files and put to filename-previews*/
+    const filenamePreview = document.getElementById('filename-previews');
+    filenamePreview.innerHTML = '';
+    const templateSource = document.getElementById('files-template').innerHTML;
+    const template = window.Handlebars.compile(templateSource);
+    let tplObj = {
+      files: [].slice.call(files).map((f, i) => ({
+        name: f.name,
+        index: i
+      }))
+    };
+    console.log({
+      tplObj
+    });
+    const html = template(tplObj);
+    filenamePreview.innerHTML = html;
     filenamePreview.classList.remove('hidden');
-    uploadText.classList.add('hidden');
+    //uploadText.classList.add('hidden');
+    dropzoneContainer.classList.add('hidden');
     step2.classList.remove('hidden');
   }
   console.log('DOMContentLoaded done.');
@@ -598,12 +650,7 @@ const languageCodes = ["AR", "BG", "CS", "DA", "DE", "EL", "EN",
 /*   "PT-BR",
    "PT-PT",*/
 "RO", "RU", "SK", "SL", "SV", "TR", "UK", "ZH"];
-const prepareInput = () => {
-  const fileInput = document.getElementById('file');
-  const file = fileInput.files[fileInput.files.length - 1];
-  console.log({
-    fileInput
-  });
+const prepareInput = file => {
   console.log({
     file
   });

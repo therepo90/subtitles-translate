@@ -3783,6 +3783,14 @@ p {
 .supp li {
   display: inline-block;
 }*/
+.preview-group {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  grid-gap: 30px;
+  background: #eeeeee;
+  padding: 10px;
+  border-radius: 20px;
+}
 html {
   scroll-behavior: smooth;
 }
