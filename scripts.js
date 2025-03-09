@@ -87,17 +87,20 @@ async function startTranslateFiles(fileInput, targetLanguage) {
         const loadingDownload = document.getElementById('loading-'+i);
         const error = document.getElementById('error-'+i);
         loadingDownload.classList.remove('hidden');
-        const dlUrl = await translateFile(fileInput, targetLanguage, i)
+        await translateFile(fileInput, targetLanguage, i)
+            .then(dlUrl => {
+                downloadButton.classList.remove('hidden');
+                downloadButton.href = dlUrl;
+            })
             .catch(err => {
                 console.error(err);
                 error.classList.remove('hidden');
+                error.innerText = `Error: ${err.message}`;
                 //alert('Error translating file ' + files[i].name);
                 // todo dom el
             }).finally(() => {
                 loadingDownload.classList.add('hidden');
             });
-        downloadButton.classList.remove('hidden');
-        downloadButton.href = dlUrl;
     }
 
 }
@@ -113,7 +116,7 @@ async function translateFile(fileInput, targetLanguage,i) {
             Authorization: `Bearer ${token}`
         },
     });
-    await checkResError(response); // moze false, bo errory z api nie widac
+    await checkResError(response, false); // moze false, bo errory z api nie widac
     const fileId = await response.text();
     console.log(fileId);
     let downloadUrl = `${apiUrl}/file/${fileId}`;
@@ -182,15 +185,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         //getTranslationButton.classList.remove('hidden');
         //console.log('set up click');
 
-        step2.classList.add('hidden');
-        //loading.classList.remove('hidden');
-        getTranslationButton.classList.add('hidden');
         // clear input and hide step2
         //fileInput.value = '';
         //filenamePreview.textContent = '';
         try {
             const targetLanguage = getTargetLang();
             if (targetLanguage && targetLanguage.length === 2) {
+                step2.classList.add('hidden');
+                //loading.classList.remove('hidden');
+                getTranslationButton.classList.add('hidden');
                 await startTranslateFiles(fileInput, targetLanguage);
                 //step2.classList.add('hidden');
                 //loading.classList.add('hidden');
