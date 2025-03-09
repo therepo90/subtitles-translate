@@ -83,21 +83,28 @@ function getTargetLang() {
 async function startTranslateFiles(fileInput, targetLanguage) {
     const files = fileInput.files;
     for (let i = 0; i < files.length; i++) {
-        const downloadButton = document.getElementById('download-btn'+i);
+        const downloadButton = document.getElementById('download-btn-'+i);
         const loadingDownload = document.getElementById('loading-'+i);
-        await translateFile(fileInput, targetLanguage,i, downloadButton, loadingDownload).catch(err => {
-            console.error(err);
-            //alert('Error translating file ' + files[i].name);
-            // todo dom el
-        });
+        const error = document.getElementById('error-'+i);
+        loadingDownload.classList.remove('hidden');
+        const dlUrl = await translateFile(fileInput, targetLanguage, i)
+            .catch(err => {
+                console.error(err);
+                error.classList.remove('hidden');
+                //alert('Error translating file ' + files[i].name);
+                // todo dom el
+            }).finally(() => {
+                loadingDownload.classList.add('hidden');
+            });
+        downloadButton.classList.remove('hidden');
+        downloadButton.href = dlUrl;
     }
 
 }
-async function translateFile(fileInput, targetLanguage,i, downloadButton, loadingDownload) {
+async function translateFile(fileInput, targetLanguage,i) {
     const formData = prepareInput(fileInput.files[i]);
     formData.append('targetLanguage', targetLanguage); // Dodaj wartość target-language do danych formularza
 
-    loadingDownload.classList.remove('hidden');
     const token = await getAuth0Client().getTokenSilently();
     const response = await fetch(`${apiUrl}/api/translate`, {
         method: 'POST',
@@ -106,14 +113,14 @@ async function translateFile(fileInput, targetLanguage,i, downloadButton, loadin
             Authorization: `Bearer ${token}`
         },
     });
-    await checkResError(response, false);
+    await checkResError(response); // moze false, bo errory z api nie widac
     const fileId = await response.text();
     console.log(fileId);
     let downloadUrl = `${apiUrl}/file/${fileId}`;
     // set url for downloadButton
-    downloadButton.href = downloadUrl;
+    return downloadUrl;
     //document.getElementById('loadingSuccess').classList.remove('hidden');
-    loadingDownload.classList.add('hidden');
+    //loadingDownload.classList.add('hidden');
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -164,25 +171,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     const dropzoneContainer = document.getElementById('dropzone');
     const step2 = document.getElementById('step2');
     const step3 = document.getElementById('step3');
-    const loading = document.getElementById('loading');
+    //const loading = document.getElementById('loading');
 
     const getTranslationButton = document.getElementById('get-translation-btn');
     getTranslationButton.addEventListener('click', async () => {
         console.log('clicked.');
 
-        const downloadButton = document.getElementById('download-button');
-        const loadingDownload = document.getElementById('loading-download');
-        document.getElementById('upload-container').classList.add('hidden');
-        document.getElementById('highlights').classList.add('hidden');
-        const step4 = document.getElementById('step4');
-        step4.classList.remove('hidden');
-        getTranslationButton.classList.remove('hidden');
-        console.log('set up click');
+        //document.getElementById('upload-container').classList.add('hidden');
+        //document.getElementById('highlights').classList.add('hidden');
+        //getTranslationButton.classList.remove('hidden');
+        //console.log('set up click');
 
         step2.classList.add('hidden');
-        loading.classList.remove('hidden');
+        //loading.classList.remove('hidden');
         getTranslationButton.classList.add('hidden');
-        loadingDownload.classList.remove('hidden');
         // clear input and hide step2
         //fileInput.value = '';
         //filenamePreview.textContent = '';
@@ -190,8 +192,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const targetLanguage = getTargetLang();
             if (targetLanguage && targetLanguage.length === 2) {
                 await startTranslateFiles(fileInput, targetLanguage);
-                step2.classList.add('hidden');
-                loading.classList.add('hidden');
+                //step2.classList.add('hidden');
+                //loading.classList.add('hidden');
             } else {
                 alert('Please enter the target 2-letter language code. ');
             }
@@ -350,10 +352,7 @@ const languageCodes = [
     "UK",
     "ZH"
 ];
-const prepareInput = (i) => {
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files[i];
-    console.log({fileInput})
+const prepareInput = (file) => {
     console.log({file})
     const formData = new FormData();
     formData.append('file', file);

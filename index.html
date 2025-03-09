@@ -66,6 +66,7 @@
 
     <!--<h2 style="color:white; text-align: center;" class="seo">Its free</h2>-->
     <h2 style="color:white; text-align: center;">Extensions: .srt</h2>
+    <h2 style="color:#d7d7d7; text-align: center;">Multiple files supported</h2>
 
     </div>
     <!--<div class="container" id="upload-unauth" style="text-align: center;">
@@ -84,15 +85,19 @@
             <div style="text-align: center;width: 100%;" id="step2" class="hidden">
                 <h2 style="color:black; text-align: center;">
                     <p>Supported language codes:</p>
-                    ar, bn, bg, zh, hr, cs, da, nl, en, et, fi, fr, de, el, iw, hi, hu, id, it, ja, ko, lv, lt, no, pl, pt, ro, ru, sr, sk, sl, es, sw, sv, th, tr, uk, vi
+                    <p> ar, bn, bg, zh, hr, cs, da, nl, en, et, fi, fr, de, el, iw, hi, hu, id, it, ja, ko, lv, lt, no,
+                        pl, pt, ro, ru, sr, sk, sl, es, sw, sv, th, tr, uk, vi</p>
                 </h2>
                 <fieldset>
-                    <label><div style="margin: 12px;">Target language code:</div><input type="text" placeholder="en/pl/de..." id="target-language" minlength="2" maxlength="2"></label>
+                    <label><div style="margin: 12px;">Output language code:</div><input type="text" placeholder="en/pl/de..." id="target-language" minlength="2" maxlength="2"></label>
                 </fieldset>
 
                 <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="get-translation-btn">Translate</button>
             </div>
-            <div id="loading" class="hidden">Loading...</div>
+            <div style="text-align: center;">
+                <button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-primary warning" onclick="window.location.reload();">Reset</button>
+            </div>
+            <!--<div id="loading" class="hidden">Loading...</div>-->
         </div>
         <script id="files-template" type="text/x-handlebars-template">
             <div class="flex flex-column">
@@ -101,24 +106,15 @@
                     <li class="class preview-group">
                         <span class="">{{this.name}}</span>
                         <div class="hidden" id="loading-{{@index}}">Loading...</div>
-                        <a class="btn btn-primary hidden" data-index="{{@index}}" href id="download-btn-{{@index}}">Download</a>
+                        <div class="hidden" id="error-{{@index}}">Error</div>
+                        <a class="btn btn-primary hidden" data-index="{{@index}}" href="#" id="download-btn-{{@index}}">Download</a>
                     </li>
                     {{/each}}
                 </ul>
             </div>
+
         </script>
 
-    </div>
-    <div class="container hidden" id="step4" style="text-align: center">
-        <div>
-            <!--<button style="max-width: 150px;margin-top: 20px;" type="button" class="btn btn-secondary" id="get-translation-btn">Click to get translation</button>-->
-            <div id="loading-download" class="hidden">Loading...do not close this window and do not refresh the page.(It may take up to 1 minute).</div>
-            <div id="loadingSuccess" class="hidden">
-                Loaded.
-            <a style="max-width: 150px;margin-top: 20px;" class="btn btn-secondary" href="#" id="download-button">Click to download</a>
-            </div>
-
-        </div>
     </div>
     <ul style="color:white; list-style-type: circle; width: 300px; margin: 0 auto;">
         <!--<li>
