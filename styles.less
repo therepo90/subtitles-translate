@@ -87,3 +87,46 @@ body {
     margin-left: 10px;
     animation: colorChange 1s infinite 0.6s, bend 2s infinite; /* Staggered animation */
 }
+
+.paginated-subtitles {
+    .subtitle-list {
+        ul {
+            max-height: 300px; /* Ogranicz wysokość listy */
+            overflow-y: auto; /* Dodaj przewijanie, jeśli lista jest za długa */
+            //border: 1px solid #555; /* Dodaj ramkę dla lepszej widoczności */
+            padding: 10px;
+            margin-top: 10px;
+            li {
+                margin-bottom: 5px;
+                font-size: 0.9em; /* Zmniejsz rozmiar czcionki */
+            }
+        }
+    }
+    .pagination-controls {
+        a.button {
+            padding: 5px 10px; /* Zmniejsz padding linków */
+            font-size: 0.8em; /* Zmniejsz rozmiar czcionki linków */
+            margin: 0 5px; /* Dodaj margines, aby oddzielić linki */
+            display: inline-block; /* Upewnij się, że linki są wyświetlane jako elementy blokowe */
+            text-decoration: none; /* Usuń podkreślenie */
+            color: white; /* Ustaw kolor tekstu */
+            background-color: #555; /* Dodaj tło */
+         //   border: 1px solid #777; /* Dodaj ramkę */
+            border-radius: 3px; /* Zaokrąglij rogi */
+            &:hover {
+                background-color: #777;
+            }
+            max-width: 100px;
+        }
+        #pagination-numbers {
+            a {
+                margin: 0 5px;
+                color: white;
+                text-decoration: none;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
