@@ -19,6 +19,7 @@
                 hreflang="x-default"
                 href="https://translatesubtitles.org"
         />
+        <changefreq>daily</changefreq>
     </url>
 
 </urlset>
