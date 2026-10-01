@@ -10,6 +10,9 @@ export const getAuth0Client = () => {
 export const configureClient = async () => {
     const config = auth0Cfg;
     try {
+        console.log({
+            apiUrl,
+        })
         console.log('configureClient...', window.auth0, config);
         auth0Client = await window.auth0.createAuth0Client(config);
         console.log('configured.');

@@ -126,6 +126,76 @@ async function translateFile(fileInput, targetLanguage,i) {
     //loadingDownload.classList.add('hidden');
 }
 
+
+async function fetchRandomSubtitles() {
+    try {
+        const response = await fetch(`${apiUrl}/subtitles/random`);
+        await checkResError(response, false);
+        const subtitles = await response.json();
+        const latestSubtitlesDiv = document.querySelector('.random-subtitles');
+        if (subtitles && subtitles.length > 0) {
+            const ul = document.createElement('ul');
+            ul.style.color = 'white';
+            ul.style.listStyleType = 'none';
+            ul.style.textAlign = 'center';
+            ul.style.width = '600px';
+            ul.style.margin = '0 auto';
+            subtitles.forEach(sub => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `${apiUrl}/subtitles/${sub.targetLanguage}/${sub.id}/${sub.filename}`;
+                a.target = '_blank';
+                a.style.color = 'white';
+                a.style.textDecoration = 'underline';
+                a.textContent = `${sub.filename} (${sub.targetLanguage.toUpperCase()})`;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+            latestSubtitlesDiv.appendChild(ul);
+        } else {
+            latestSubtitlesDiv.innerHTML = '<p style="color:white; text-align: center;">-</p>';
+        }
+    } catch (error) {
+        console.error('Błąd podczas pobierania najnowszych napisów:', error);
+        document.querySelector('.latest-subtitles').innerHTML = '<p style="color:white; text-align: center;">Nie udało się załadować najnowszych napisów.</p>';
+    }
+}
+
+
+async function fetchLatestSubtitles() {
+    try {
+        const response = await fetch(`${apiUrl}/subtitles/latest`);
+        await checkResError(response, false);
+        const subtitles = await response.json();
+        const latestSubtitlesDiv = document.querySelector('.latest-subtitles');
+        if (subtitles && subtitles.length > 0) {
+            const ul = document.createElement('ul');
+            ul.style.color = 'white';
+            ul.style.listStyleType = 'none';
+            ul.style.textAlign = 'center';
+            ul.style.width = '600px';
+            ul.style.margin = '0 auto';
+            subtitles.forEach(sub => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `${apiUrl}/subtitles/${sub.targetLanguage}/${sub.id}/${sub.filename}`;
+                a.target = '_blank';
+                a.style.color = 'white';
+                a.style.textDecoration = 'underline';
+                a.textContent = `${sub.filename} (${sub.targetLanguage.toUpperCase()})`;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+            latestSubtitlesDiv.appendChild(ul);
+        } else {
+            latestSubtitlesDiv.innerHTML = '<p style="color:white; text-align: center;">-</p>';
+        }
+    } catch (error) {
+        console.error('Błąd podczas pobierania najnowszych napisów:', error);
+        document.querySelector('.latest-subtitles').innerHTML = '<p style="color:white; text-align: center;">Nie udało się załadować najnowszych napisów.</p>';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     console.log('DOMContentLoaded init...');
 
@@ -137,6 +207,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     await setHandlers();
     await configureClient();
     await updateUI();
+    fetchLatestSubtitles(); // Wywołanie funkcji po załadowaniu DOM
+    fetchRandomSubtitles(); // Wywołanie funkcji po załadowaniu DOM
 
     const isAuthenticated = await getAuth0Client().isAuthenticated();
 
@@ -359,10 +431,10 @@ const languageCodes = [
     "UK",
     "ZH"
 ];
+
 const prepareInput = (file) => {
     console.log({file})
     const formData = new FormData();
     formData.append('file', file);
     return formData;
 }
-
