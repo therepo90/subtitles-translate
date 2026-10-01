@@ -3919,6 +3919,12 @@ body {
 .paginated-subtitles .pagination-controls a.button:hover {
   background-color: #777;
 }
+.paginated-subtitles .pagination-controls #pagination-numbers {
+  max-width: 600px;
+  overflow-x: auto;
+  display: block;
+  margin: 0 auto;
+}
 .paginated-subtitles .pagination-controls #pagination-numbers a {
   margin: 0 5px;
   color: white;
