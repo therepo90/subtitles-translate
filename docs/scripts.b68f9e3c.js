@@ -190,6 +190,9 @@ exports.getAuth0Client = getAuth0Client;
 const configureClient = async () => {
   const config = _cfg.auth0Cfg;
   try {
+    console.log({
+      apiUrl: _cfg.apiUrl
+    });
     console.log('configureClient...', window.auth0, config);
     auth0Client = await window.auth0.createAuth0Client(config);
     console.log('configured.');
@@ -458,6 +461,134 @@ async function translateFile(fileInput, targetLanguage, i) {
   //document.getElementById('loadingSuccess').classList.remove('hidden');
   //loadingDownload.classList.add('hidden');
 }
+async function fetchRandomSubtitles() {
+  try {
+    const response = await fetch(`${_cfg.apiUrl}/subtitles/random`);
+    await (0, _utils.checkResError)(response, false);
+    const subtitles = await response.json();
+    const latestSubtitlesDiv = document.querySelector('.random-subtitles');
+    if (subtitles && subtitles.length > 0) {
+      const ul = document.createElement('ul');
+      ul.style.color = 'white';
+      ul.style.listStyleType = 'none';
+      ul.style.textAlign = 'center';
+      ul.style.width = '600px';
+      ul.style.margin = '0 auto';
+      subtitles.forEach(sub => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `${_cfg.apiUrl}/subtitles/${sub.targetLanguage}/${sub.id}/${sub.filename}`;
+        a.target = '_blank';
+        a.style.color = 'white';
+        a.style.textDecoration = 'underline';
+        a.textContent = `${sub.filename} (${sub.targetLanguage.toUpperCase()})`;
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      latestSubtitlesDiv.appendChild(ul);
+    } else {
+      latestSubtitlesDiv.innerHTML = '<p style="color:white; text-align: center;">-</p>';
+    }
+  } catch (error) {
+    console.error('Błąd podczas pobierania najnowszych napisów:', error);
+    document.querySelector('.latest-subtitles').innerHTML = '<p style="color:white; text-align: center;">Nie udało się załadować najnowszych napisów.</p>';
+  }
+}
+async function fetchLatestSubtitles() {
+  try {
+    const response = await fetch(`${_cfg.apiUrl}/subtitles/latest`);
+    await (0, _utils.checkResError)(response, false);
+    const subtitles = await response.json();
+    const latestSubtitlesDiv = document.querySelector('.latest-subtitles');
+    if (subtitles && subtitles.length > 0) {
+      const ul = document.createElement('ul');
+      ul.style.color = 'white';
+      ul.style.listStyleType = 'none';
+      ul.style.textAlign = 'center';
+      ul.style.width = '600px';
+      ul.style.margin = '0 auto';
+      subtitles.forEach(sub => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `${_cfg.apiUrl}/subtitles/${sub.targetLanguage}/${sub.id}/${sub.filename}`;
+        a.target = '_blank';
+        a.style.color = 'white';
+        a.style.textDecoration = 'underline';
+        a.textContent = `${sub.filename} (${sub.targetLanguage.toUpperCase()})`;
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      latestSubtitlesDiv.appendChild(ul);
+    } else {
+      latestSubtitlesDiv.innerHTML = '<p style="color:white; text-align: center;">-</p>';
+    }
+  } catch (error) {
+    console.error('Błąd podczas pobierania najnowszych napisów:', error);
+    document.querySelector('.latest-subtitles').innerHTML = '<p style="color:white; text-align: center;">Nie udało się załadować najnowszych napisów.</p>';
+  }
+}
+let currentPage = 1;
+let totalPages = 1;
+async function fetchPaginatedSubtitles(page) {
+  try {
+    const limit = 10; // Number of items per page (still used for calculating 'start')
+    const start = (page - 1) * limit;
+    const response = await fetch(`${_cfg.apiUrl}/subtitles/by-date?start=${start}`);
+    await (0, _utils.checkResError)(response, false);
+    const data = await response.json();
+    const subtitles = data.subs;
+    totalPages = data.totalPages;
+    currentPage = data.currentPage || page;
+    const subtitleListDiv = document.querySelector('.paginated-subtitles .subtitle-list');
+    subtitleListDiv.innerHTML = ''; // Clear previous subtitles
+
+    if (subtitles && subtitles.length > 0) {
+      const ul = document.createElement('ul');
+      ul.style.listStyleType = 'none';
+      ul.style.padding = '0';
+      subtitles.forEach(sub => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = `${_cfg.apiUrl}/subtitles/${sub.targetLanguage}/${sub.id}/${sub.filename}`;
+        a.target = '_blank';
+        a.style.color = 'white';
+        a.style.textDecoration = 'underline';
+        a.textContent = `${sub.filename} (${sub.targetLanguage.toUpperCase()})`;
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+      subtitleListDiv.appendChild(ul);
+    } else {
+      subtitleListDiv.innerHTML = '<p style="color:white; text-align: center;">No subtitles to display.</p>';
+    }
+
+    // Update pagination numbers
+    const paginationNumbersDiv = document.getElementById('pagination-numbers');
+    paginationNumbersDiv.innerHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+      const pageLink = document.createElement('a');
+      pageLink.href = '#';
+      pageLink.textContent = i;
+      pageLink.style.margin = '0 5px';
+      pageLink.style.color = 'white';
+      pageLink.style.textDecoration = 'none';
+      if (i === currentPage) {
+        pageLink.style.fontWeight = 'bold';
+        pageLink.style.textDecoration = 'underline';
+      }
+      pageLink.addEventListener('click', e => {
+        e.preventDefault();
+        fetchPaginatedSubtitles(i);
+      });
+      paginationNumbersDiv.appendChild(pageLink);
+    }
+    document.getElementById('prev-page').style.visibility = currentPage === 1 ? 'hidden' : 'visible';
+    document.getElementById('next-page').style.visibility = currentPage === totalPages ? 'hidden' : 'visible';
+  } catch (error) {
+    console.error('Error fetching paginated subtitles:', error);
+    document.querySelector('.paginated-subtitles .subtitle-list').innerHTML = '<p style="color:white; text-align: center;">Failed to load subtitles.</p>';
+  }
+}
 document.addEventListener("DOMContentLoaded", async function () {
   console.log('DOMContentLoaded init...');
   document.querySelectorAll(".logged-in").forEach(el => el.classList.add("hidden"));
@@ -467,6 +598,20 @@ document.addEventListener("DOMContentLoaded", async function () {
   await setHandlers();
   await (0, _auth.configureClient)();
   await (0, _auth.updateUI)();
+  fetchLatestSubtitles(); // Call function after DOM loaded
+  fetchRandomSubtitles(); // Call function after DOM loaded
+  fetchPaginatedSubtitles(currentPage); // Initial loading of paginated subtitles
+
+  document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+      fetchPaginatedSubtitles(currentPage - 1);
+    }
+  });
+  document.getElementById('next-page').addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      fetchPaginatedSubtitles(currentPage + 1);
+    }
+  });
   const isAuthenticated = await (0, _auth.getAuth0Client)().isAuthenticated();
   if (isAuthenticated) {
     console.log('User is authenticated');

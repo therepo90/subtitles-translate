@@ -3884,3 +3884,46 @@ body {
   animation: colorChange 1s infinite 0.6s, bend 2s infinite;
   /* Staggered animation */
 }
+.paginated-subtitles .subtitle-list ul {
+  max-height: 300px;
+  /* Ogranicz wysokość listy */
+  overflow-y: auto;
+  /* Dodaj przewijanie, jeśli lista jest za długa */
+  padding: 10px;
+  margin-top: 10px;
+}
+.paginated-subtitles .subtitle-list ul li {
+  margin-bottom: 5px;
+  font-size: 0.9em;
+  /* Zmniejsz rozmiar czcionki */
+}
+.paginated-subtitles .pagination-controls a.button {
+  padding: 5px 10px;
+  /* Zmniejsz padding linków */
+  font-size: 0.8em;
+  /* Zmniejsz rozmiar czcionki linków */
+  margin: 0 5px;
+  /* Dodaj margines, aby oddzielić linki */
+  display: inline-block;
+  /* Upewnij się, że linki są wyświetlane jako elementy blokowe */
+  text-decoration: none;
+  /* Usuń podkreślenie */
+  color: white;
+  /* Ustaw kolor tekstu */
+  background-color: #555;
+  /* Dodaj tło */
+  border-radius: 3px;
+  /* Zaokrąglij rogi */
+  max-width: 100px;
+}
+.paginated-subtitles .pagination-controls a.button:hover {
+  background-color: #777;
+}
+.paginated-subtitles .pagination-controls #pagination-numbers a {
+  margin: 0 5px;
+  color: white;
+  text-decoration: none;
+}
+.paginated-subtitles .pagination-controls #pagination-numbers a:hover {
+  text-decoration: underline;
+}
